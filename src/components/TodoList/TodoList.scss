@@ -1,0 +1,9 @@
+$primary-color: grey;
+@import 'loaders.css/src/animations/ball-clip-rotate-multiple.scss';
+
+.loader-hidden {
+  display: none;
+}
+.loader-active {
+  display: block;
+}
