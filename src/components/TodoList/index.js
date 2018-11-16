@@ -1,18 +1,14 @@
 import TodoList from './TodoList';
 import { connect } from 'react-redux';
-import { deleteItem, findPending } from '../../module';
+import { addUserToFirebase } from '../../module';
 
 
-const mapStateToProps = ({items, isLoading, isError}) => ({
-    items,
-    isLoading,
-    isError
+const mapStateToProps = (state) => ({
+    items: state.firebase.items
 });
 
 const mapDispatchToProps = {
-    deleteItem,
-    findPending
-    //getList
+    addUserToFirebase
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TodoList);

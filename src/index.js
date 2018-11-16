@@ -4,32 +4,35 @@ import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 import './index.css';
 import TodoList from "./components/TodoList";
-//import thunk from 'redux-thunk';
+import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import module from './module';
 import { Provider } from 'react-redux';
 import { render } from 'react-dom';
 import { composeWithDevTools } from 'redux-devtools-extension';
-//import axios from 'axios';
-import createSagaMiddleware from 'redux-saga';
-import { getListSaga } from './module'; // bez { } nie działało - nie widziało akcji
- 
+import * as firebase from "firebase";
 
-/*const api =  axios.create({
-  //baseURL: process.env.REACT_APP_API_URL
-  baseURL: 'https://api.github.com'
-});*/
 
-const sagaMiddleware = createSagaMiddleware();
+// --------Przygotowanie bazy danych--------
+const config = {
+  apiKey: "AIzaSyDaBb-y1E-RB70QGIYnyz2xI_8ZDkhoC1c",
+  authDomain: "reactlistwithfirebase.firebaseapp.com",
+  databaseURL: "https://reactlistwithfirebase.firebaseio.com",
+  projectId: "reactlistwithfirebase",
+  storageBucket: "reactlistwithfirebase.appspot.com",
+  messagingSenderId: "164262586929"
+};
+const app = firebase.initializeApp(config);
+const prepareFirebase = app.database().ref('users');
+
+//--------------------------------------------
 
 const store = createStore(
     module,
     composeWithDevTools(
-      applyMiddleware(sagaMiddleware /*, thunk.withExtraArgument(api)*/)
+      applyMiddleware(thunk.withExtraArgument(prepareFirebase))
     )
 );
-
-sagaMiddleware.run(getListSaga);
 
 const List = () => (
     <Provider store={store}>

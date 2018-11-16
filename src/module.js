@@ -1,87 +1,87 @@
 import typeToReducer from 'type-to-reducer';
-import axios from 'axios';
-import { takeEvery, put, call } from 'redux-saga/effects';
+//import axios from 'axios';
+//import { takeEvery, put, call } from 'redux-saga/effects';
+//import * as firebase from "firebase";
+import {combineReducers} from 'redux';
+import {reducer as formReducer} from 'redux-form';
+
 
 const PENDING = 'PENDING';
 const REJECTED = 'REJECTED';
 const FULFILLED = 'FULFILLED';
-const FIND = 'FIND';
-const DELETE = 'DELETE';
+const ADD = 'ADD';
 
-const initialState = {
-    items: {},
-    phrase: '',
-    isLoading: false,
-    isError: false
-};
 
-export const deleteItem = (key) => ({
-  type: DELETE,
-  key
+// -------Dodawanie użytkownika do bazy-------
+
+const baseInitialState = {
+  items: {},
+  isUploading: false,
+  isError: false
+}
+
+export const addPending = () => ({
+  type: `${ADD}_${PENDING}`
 });
 
-export const findPending = (phrase) => ({
-  type: `${FIND}_${PENDING}`,
-  phrase
-});
-
-export const findSuccess = (data, phrase) => {
-  const filteredList = data.filter(({login}) => (
-    login.includes(phrase)
-  ));
-  const items = {};
-  filteredList.forEach(({ id, login }) => items[id] = { login, key: id });
+export const addSuccess = (user, {firstName, secondName}) => {
+  if(firstName && secondName){
+    user.push({
+      firstName,
+      secondName,
+      key: Date.now()
+    });
+  }
+  user.on("value", (data) => data.val());
   return{
-    type: `${FIND}_${FULFILLED}`,
-    items
-  }; 
-};
-export const findError = (error) => ({
-  type: `${FIND}_${REJECTED}`,
+    type: `${ADD}_${FULFILLED}`
+  };
+}
+
+export const addError = (error) => ({
+  type: `${ADD}_${REJECTED}`,
   error
 });
 
-export function* getList(args){
-  try{    
-    const response = yield call(axios, 'https://api.github.com/users');
-    yield put(findSuccess(response.data, args.phrase));
-  } catch (error){
-    yield put(findError(error));
-  }
+
+export const  addUserToFirebase = (userData) => async(dispatch, getState, prepareFirebase) => {
+  dispatch(addPending());
+  try{
+    const resolve = await prepareFirebase;
+    dispatch(addSuccess(resolve, userData))
+  } catch(error){     
+    dispatch(addError(error));
+  };
 };
 
-export function* getListSaga(){
-  yield takeEvery('FIND_PENDING', getList);
-};
-
-const listReducer = typeToReducer({
-  [DELETE]: (state, {key}) => {
-    const items = { ...state.items } ;
-    delete items[key];
-    return {
-      ...state,
-      items,
-    }; 
-  },
-  [FIND]: {
+const firebaseReducer = typeToReducer({
+  [ADD]: {
     PENDING: (state) => ({
       ...state,
-      isLoading: true,
+      isUploading: true,
       isError: false
     }),
-    FULFILLED: (state, {items}) => {
+    FULFILLED: (state) => {
       return{
         ...state,
-        items,
-        isLoading: false
+        isUploading: false,
+        isError: false
       };
     },
-    REJECTED: (state) => ({
+    REJECTED: (state, {error}) => ({
       ...state,
-      isLoading: false,
+      error,
+      isUploading: false,
       isError: true
     }), 
   },
-}, initialState);
+}, baseInitialState);
 
-export default listReducer;
+// -------------------------------------------
+
+const rootReducer = combineReducers({
+  form: formReducer,
+  firebase: firebaseReducer
+});
+
+export default rootReducer;
