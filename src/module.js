@@ -1,4 +1,4 @@
-import typeToReducer from 'type-to-reducer';git
+import typeToReducer from 'type-to-reducer';
 import {combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
 
