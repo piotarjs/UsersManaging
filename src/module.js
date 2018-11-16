@@ -1,7 +1,4 @@
-import typeToReducer from 'type-to-reducer';
-//import axios from 'axios';
-//import { takeEvery, put, call } from 'redux-saga/effects';
-//import * as firebase from "firebase";
+import typeToReducer from 'type-to-reducer';git
 import {combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
 

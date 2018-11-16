@@ -1,8 +1,8 @@
 import React from "react";
 import { Table, TableHead, TableBody, Card, CardBody } from "mdbreact";
-import "./TodoItems.css";
+import "./ShowUsersList.css";
 
-const TodoItems = ({ entries, deleteItem }) =>
+const ShowUsersList = ({ entries, deleteItem }) =>
   <Card>
     <CardBody>
       <h2 className="text-center mb-3">LISTA ZAWODNIKÓW</h2>
@@ -26,4 +26,4 @@ const TodoItems = ({ entries, deleteItem }) =>
     </CardBody>
   </Card>
 
-export default TodoItems;
+export default ShowUsersList;

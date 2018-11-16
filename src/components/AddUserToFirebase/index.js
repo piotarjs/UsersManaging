@@ -1,4 +1,4 @@
-import TodoList from './TodoList';
+import AddUserToFirebase from './AddUserToFirebase';
 import { connect } from 'react-redux';
 import { addUserToFirebase } from '../../module';
 
@@ -11,4 +11,4 @@ const mapDispatchToProps = {
     addUserToFirebase
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TodoList);
+export default connect(mapStateToProps, mapDispatchToProps)(AddUserToFirebase);

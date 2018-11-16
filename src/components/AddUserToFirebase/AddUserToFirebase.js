@@ -1,20 +1,20 @@
 import React from "react";
-//import TodoItems from "../TodoItems";
-import "./TodoList.css";
-import "./TodoList.scss";
+//import ShowUsersList from "../ShowUsersList";
+import "./AddUserToFirebase.css";
+import "./AddUserToFirebase.scss";
 import { Container, Row, Col, Card, CardBody } from "mdbreact";
 import {reduxForm, Field} from "redux-form";
 //import Loader from 'react-loaders';
 
 
-const TodoList = ({addUserToFirebase, handleSubmit}) =>
+const AddUserToFirebase = ({addUserToFirebase, handleSubmit}) =>
   <Container>
     <Row className="mt-4">
       <Col lg="8">
       {
         /*{isLoading && <Loader type="ball-clip-rotate-multiple" />}
         {isError && <p>Wystąpił błąd podczas pobierania danych!!!</p>}
-        {Object.values(items).length > 0 && <TodoItems entries={items} deleteItem={deleteItem}/>}*/
+        {Object.values(items).length > 0 && <ShowUsersList entries={items} deleteItem={deleteItem}/>}*/
       }
       </Col>
       <Col lg="4">
@@ -38,4 +38,4 @@ const TodoList = ({addUserToFirebase, handleSubmit}) =>
 
 export default reduxForm({
   form: 'List'
-})(TodoList);
+})(AddUserToFirebase);
