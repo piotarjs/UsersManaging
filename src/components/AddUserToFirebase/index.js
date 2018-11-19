@@ -1,6 +1,6 @@
 import AddUserToFirebase from './AddUserToFirebase';
 import { connect } from 'react-redux';
-import { addUserToFirebase } from '../../module';
+import { addUserToFirebase, getUserFromFirebase } from '../../module';
 
 
 const mapStateToProps = (state) => ({
@@ -8,7 +8,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-    addUserToFirebase
+    addUserToFirebase,
+    getUserFromFirebase
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddUserToFirebase);

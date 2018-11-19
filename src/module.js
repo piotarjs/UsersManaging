@@ -7,6 +7,7 @@ const PENDING = 'PENDING';
 const REJECTED = 'REJECTED';
 const FULFILLED = 'FULFILLED';
 const ADD = 'ADD';
+const GET = 'GET;'
 
 
 // -------Dodawanie użytkownika do bazy-------
@@ -14,6 +15,7 @@ const ADD = 'ADD';
 const baseInitialState = {
   items: {},
   isUploading: false,
+  isLoading: false,
   isError: false
 }
 
@@ -29,7 +31,6 @@ export const addSuccess = (user, {firstName, secondName}) => {
       key: Date.now()
     });
   }
-  user.on("value", (data) => data.val());
   return{
     type: `${ADD}_${FULFILLED}`
   };
@@ -41,6 +42,7 @@ export const addError = (error) => ({
 });
 
 
+
 export const  addUserToFirebase = (userData) => async(dispatch, getState, prepareFirebase) => {
   dispatch(addPending());
   try{
@@ -50,6 +52,43 @@ export const  addUserToFirebase = (userData) => async(dispatch, getState, prepar
     dispatch(addError(error));
   };
 };
+
+// -------------------------------------------
+
+// ------- Pobranie listy użytkowników z bazy -------
+
+export const getPending = () => ({
+  type: `${GET}_${PENDING}`
+});
+
+export const getSuccess = (users) => {
+  let items = {};
+  users.on('value', data => items = data.val());
+  return{
+    type: `${GET}_${FULFILLED}`,
+    items
+  };
+};
+
+export const getError = (error) => ({
+  type: `${GET}_${REJECTED}`,
+  error
+});
+
+
+
+export const  getUserFromFirebase = () => async(dispatch, getState, prepareFirebase) => {
+  dispatch(getPending());
+  try{
+    const resolve = await prepareFirebase;
+    dispatch(getSuccess(resolve));
+  } catch(error){     
+    dispatch(getError(error));
+  };
+};
+
+// --------------------------------------------------
+
 
 const firebaseReducer = typeToReducer({
   [ADD]: {
@@ -72,9 +111,30 @@ const firebaseReducer = typeToReducer({
       isError: true
     }), 
   },
+  [GET]: {
+    PENDING: (state) => ({
+      ...state,
+      isLoading: true,
+      isError: false
+    }),
+    FULFILLED: (state, {items}) => {
+      return{
+        ...state,
+        items,
+        isLoading: false,
+        isError: false
+      };
+    },
+    REJECTED: (state, {error}) => ({
+      ...state,
+      error,
+      isLoading: false,
+      isError: true
+    }), 
+  },
 }, baseInitialState);
 
-// -------------------------------------------
+
 
 const rootReducer = combineReducers({
   form: formReducer,
