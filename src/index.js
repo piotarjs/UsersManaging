@@ -3,7 +3,7 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 import './index.css';
-import AddUserToFirebase from "./components/AddUserToFirebase";
+import AddUserToFirebaseWithCSS from "./components/AddUserToFirebase";
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import module from './module';
@@ -22,21 +22,21 @@ const config = {
   storageBucket: "reactlistwithfirebase.appspot.com",
   messagingSenderId: "164262586929"
 };
-const app = firebase.initializeApp(config);
-const prepareFirebase = app.database().ref('users');
+
+const base = firebase.initializeApp(config).database();
 
 //--------------------------------------------
 
 const store = createStore(
     module,
     composeWithDevTools(
-      applyMiddleware(thunk.withExtraArgument(prepareFirebase))
+      applyMiddleware(thunk.withExtraArgument(base))
     )
 );
 
 const List = () => (
     <Provider store={store}>
-      <AddUserToFirebase/>
+      <AddUserToFirebaseWithCSS/>
     </Provider>
   )
   render(<List />, document.querySelector("#container"));

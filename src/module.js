@@ -41,12 +41,10 @@ export const addError = (error) => ({
   error
 });
 
-
-
-export const  addUserToFirebase = (userData) => async(dispatch, getState, prepareFirebase) => {
+export const  addUserToFirebase = (userData) => async(dispatch, getState, base) => {
   dispatch(addPending());
   try{
-    const resolve = await prepareFirebase;
+    const resolve = await base.ref('users');
     dispatch(addSuccess(resolve, userData))
   } catch(error){     
     dispatch(addError(error));
@@ -61,27 +59,21 @@ export const getPending = () => ({
   type: `${GET}_${PENDING}`
 });
 
-export const getSuccess = (users) => {
-  let items = {};
-  users.on('value', data => items = data.val());
-  return{
-    type: `${GET}_${FULFILLED}`,
-    items
-  };
-};
+export const getSuccess = (users) => ({
+  type: `${GET}_${FULFILLED}`,
+  items: users.val()
+});
 
 export const getError = (error) => ({
   type: `${GET}_${REJECTED}`,
   error
 });
 
-
-
-export const  getUserFromFirebase = () => async(dispatch, getState, prepareFirebase) => {
+export const  getUserFromFirebase = () => async(dispatch, getState, base) => {
   dispatch(getPending());
-  try{
-    const resolve = await prepareFirebase;
-    dispatch(getSuccess(resolve));
+  try {
+    const users = await base.ref('users').once('value');
+    dispatch(getSuccess(users));
   } catch(error){     
     dispatch(getError(error));
   };
@@ -133,8 +125,6 @@ const firebaseReducer = typeToReducer({
     }), 
   },
 }, baseInitialState);
-
-
 
 const rootReducer = combineReducers({
   form: formReducer,

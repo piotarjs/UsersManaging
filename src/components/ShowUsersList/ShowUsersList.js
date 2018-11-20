@@ -1,24 +1,22 @@
 import React from "react";
 import { Table, TableHead, TableBody, Card, CardBody } from "mdbreact";
-import "./ShowUsersList.css";
 
-const ShowUsersList = ({ entries, deleteItem }) =>
+const ShowUsersList = ({ entries }) =>
   <Card>
     <CardBody>
-      <h2 className="text-center mb-3">LISTA ZAWODNIKÓW</h2>
+      <h2 className="text-center mb-3">LISTA UŻYTKOWNIKÓW</h2>
       <Table striped>
         <TableHead>
           <tr>
-            <td className="font-weight-bold">ID</td>
-            <td className="font-weight-bold">Login</td>
+            <td className="font-weight-bold">Imię</td>
+            <td className="font-weight-bold">Nazwisko</td>
           </tr>
         </TableHead>
         <TableBody>
-          {Object.values(entries).map(({key, login}) =>
-          <tr onClick={() => deleteItem(key)}
-              key={key}>
-            <td>{key}</td>
-            <td>{login}</td>
+          {Object.values(entries).map(({firstName, secondName, key}) =>
+          <tr key={key}>
+            <td>{firstName}</td>
+            <td>{secondName}</td>
           </tr>
           )}
         </TableBody>
