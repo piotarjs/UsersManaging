@@ -3,7 +3,7 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 import './index.css';
-import AddUserToFirebaseWithCSS from "./components/AddUserToFirebase";
+import AddUserToFirebase from "./components/AddUserToFirebase";
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import module from './module';
@@ -36,7 +36,7 @@ const store = createStore(
 
 const List = () => (
     <Provider store={store}>
-      <AddUserToFirebaseWithCSS/>
+      <AddUserToFirebase/>
     </Provider>
   )
   render(<List />, document.querySelector("#container"));

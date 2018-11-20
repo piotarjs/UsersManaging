@@ -2,8 +2,6 @@ import React, {Component} from "react";
 import ShowUsersList from "../ShowUsersList";
 import "./AddUserToFirebase.css";
 import "./AddUserToFirebase.scss";
-import styles from "./AddUserToFirebase.css";
-import CSSModules from 'react-css-modules';
 import { Container, Row, Col, Card, CardBody } from "mdbreact";
 import {reduxForm, Field} from "redux-form";
 import Loader from 'react-loaders';
@@ -45,8 +43,7 @@ class AddUserToFirebase extends Component{
   }
 }
 
-const AddUserToFirebaseWithCSS = CSSModules(AddUserToFirebase, styles);
 
 export default reduxForm({
   form: 'List'
-})(AddUserToFirebaseWithCSS);
+})(AddUserToFirebase);
