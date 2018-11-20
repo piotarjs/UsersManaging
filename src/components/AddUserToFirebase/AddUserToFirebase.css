@@ -1,0 +1,21 @@
+
+/*.table-striped tbody tr:hover {
+  background-color: #FA7A7A;
+  cursor: pointer;
+  transition: 1.5s;
+}*/
+.table-striped tbody tr {
+  transition: 0.9s;
+}
+table td {
+  font-size: 1.0rem;
+}
+@media only screen and (max-width: 767px) {
+  table td {
+    font-size: 0.7rem;
+  }
+}
+.input {
+  border: 1px solid #6d3349;
+  margin-bottom: 5px;
+}
