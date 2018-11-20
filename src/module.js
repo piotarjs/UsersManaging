@@ -7,13 +7,13 @@ const PENDING = 'PENDING';
 const REJECTED = 'REJECTED';
 const FULFILLED = 'FULFILLED';
 const ADD = 'ADD';
-const GET = 'GET;'
+const GET = 'GET';
 
 
 // -------Dodawanie użytkownika do bazy-------
 
 const baseInitialState = {
-  items: {},
+  users: {},
   isUploading: false,
   isLoading: false,
   isError: false
@@ -23,30 +23,28 @@ export const addPending = () => ({
   type: `${ADD}_${PENDING}`
 });
 
-export const addSuccess = (user, {firstName, secondName}) => {
-  if(firstName && secondName){
-    user.push({
-      firstName,
-      secondName,
-      key: Date.now()
-    });
-  }
-  return{
-    type: `${ADD}_${FULFILLED}`
-  };
-}
+export const addSuccess = (users) => ({
+  type: `${ADD}_${FULFILLED}`,
+  users
+});
 
 export const addError = (error) => ({
   type: `${ADD}_${REJECTED}`,
   error
 });
 
-export const  addUserToFirebase = (userData) => async(dispatch, getState, base) => {
+export const  addUserToFirebase = ({firstName, secondName}) => async(dispatch, getState, base) => {
   dispatch(addPending());
+  const usersRef = await base.ref('users');
   try{
-    const resolve = await base.ref('users');
-    dispatch(addSuccess(resolve, userData))
-  } catch(error){     
+    await usersRef.push({
+      firstName,
+      secondName,
+      key: Date.now()
+    });
+    const users = await usersRef.once('value')
+    dispatch(addSuccess(users.val()))
+  } catch(error){
     dispatch(addError(error));
   };
 };
@@ -61,7 +59,7 @@ export const getPending = () => ({
 
 export const getSuccess = (users) => ({
   type: `${GET}_${FULFILLED}`,
-  items: users.val()
+  users
 });
 
 export const getError = (error) => ({
@@ -73,7 +71,7 @@ export const  getUserFromFirebase = () => async(dispatch, getState, base) => {
   dispatch(getPending());
   try {
     const users = await base.ref('users').once('value');
-    dispatch(getSuccess(users));
+    dispatch(getSuccess(users.val()));
   } catch(error){     
     dispatch(getError(error));
   };
@@ -89,13 +87,12 @@ const firebaseReducer = typeToReducer({
       isUploading: true,
       isError: false
     }),
-    FULFILLED: (state) => {
-      return{
-        ...state,
-        isUploading: false,
-        isError: false
-      };
-    },
+    FULFILLED: (state, {users}) => ({
+      ...state,
+      users,
+      isUploading: false,
+      isError: false
+    }),
     REJECTED: (state, {error}) => ({
       ...state,
       error,
@@ -109,14 +106,12 @@ const firebaseReducer = typeToReducer({
       isLoading: true,
       isError: false
     }),
-    FULFILLED: (state, {items}) => {
-      return{
-        ...state,
-        items,
-        isLoading: false,
-        isError: false
-      };
-    },
+    FULFILLED: (state, {users}) => ({
+      ...state,
+      users,
+      isLoading: false,
+      isError: false
+    }),
     REJECTED: (state, {error}) => ({
       ...state,
       error,

@@ -14,14 +14,14 @@ class AddUserToFirebase extends Component{
     this.props.getUserFromFirebase();
   }
   render(){
-    const {items, isLoading, isError, handleSubmit, addUserToFirebase} = this.props;
+    const {users, isLoading, isError, handleSubmit, addUserToFirebase} = this.props;
     return(
       <Container>
         <Row className="mt-4">
           <Col lg="8">
             {isLoading && <Loader type="ball-clip-rotate-multiple" />}
             {isError && <p>Wystąpił błąd podczas pobierania danych!!!</p>}
-            {Object.values(items).length > 0 && <ShowUsersList entries={items}/>}
+            {Object.values(users).length > 0 && <ShowUsersList entries={users}/>}
           </Col>
           <Col lg="4">
             <Card>
@@ -29,10 +29,10 @@ class AddUserToFirebase extends Component{
                 <p className="h4 text-center py-4">Wpisz dane użytkownika</p>
                 <form onSubmit={handleSubmit(addUserToFirebase)}>
                   <div>
-                    <Field name="firstName" component='input' className="py-5" styleName="input" placeholder="Imię" type="text" />
+                    <Field name="firstName" component='input' placeholder="Imię" type="text" />
                   </div>
                   <div>
-                    <Field name="secondName" component='input' styleName="input" placeholder="Nazwisko" type="text" />
+                    <Field name="secondName" component='input' placeholder="Nazwisko" type="text" />
                   </div>
                   <button type="submit">Zapisz</button>
                 </form>
