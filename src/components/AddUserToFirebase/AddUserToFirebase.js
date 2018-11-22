@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import ShowUsersList from "../ShowUsersList";
+import UploadFile from "../UploadFile";
 import "./AddUserToFirebase.css";
 import "./AddUserToFirebase.scss";
 import { Container, Row, Col, Card, CardBody } from "mdbreact";
@@ -8,11 +9,18 @@ import Loader from 'react-loaders';
 
 
 class AddUserToFirebase extends Component{
+
+  
   componentDidMount(){
     this.props.getUserFromFirebase();
   }
+  
+  onSubmit(data){
+    this.props.addUserToFirebase(data);
+  }
+
   render(){
-    const {users, isLoading, isError, handleSubmit, addUserToFirebase} = this.props;
+    const {users, isLoading, isError, handleSubmit} = this.props;
     return(
       <Container>
         <Row className="mt-4">
@@ -25,12 +33,15 @@ class AddUserToFirebase extends Component{
             <Card>
               <CardBody>
                 <p className="h4 text-center py-4">Wpisz dane użytkownika</p>
-                <form onSubmit={handleSubmit(addUserToFirebase)}>
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                   <div>
-                    <Field name="firstName" component='input' placeholder="Imię" type="text" />
+                    <Field name="firstName" component='input' className="mb-2" placeholder="Imię" type="text" />
                   </div>
                   <div>
-                    <Field name="secondName" component='input' placeholder="Nazwisko" type="text" />
+                    <Field name="secondName" component='input' className="mb-2" placeholder="Nazwisko" type="text" />
+                  </div>
+                  <div>
+                    <Field name="uploadFile" component={UploadFile} />
                   </div>
                   <button type="submit">Zapisz</button>
                 </form>

@@ -10,11 +10,11 @@ import module from './module';
 import { Provider } from 'react-redux';
 import { render } from 'react-dom';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import * as firebase from "firebase";
+//import * as firebase from "firebase";
 
 
 // --------Przygotowanie bazy danych--------
-const config = {
+/*const config = {
   apiKey: "AIzaSyDaBb-y1E-RB70QGIYnyz2xI_8ZDkhoC1c",
   authDomain: "reactlistwithfirebase.firebaseapp.com",
   databaseURL: "https://reactlistwithfirebase.firebaseio.com",
@@ -23,14 +23,18 @@ const config = {
   messagingSenderId: "164262586929"
 };
 
-const base = firebase.initializeApp(config).database();
+const base = firebase.initializeApp(config).database();*/
+//const storageRef = firebase.storage().ref();
+//const imagesRef = storageRef.child('images/space.jpg');
+//console.log(imagesRef.fullPath);
+
 
 //--------------------------------------------
 
 const store = createStore(
     module,
     composeWithDevTools(
-      applyMiddleware(thunk.withExtraArgument(base))
+      applyMiddleware(thunk)
     )
 );
 

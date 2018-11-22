@@ -10,13 +10,15 @@ const ShowUsersList = ({ entries }) =>
           <tr>
             <td className="font-weight-bold">Imię</td>
             <td className="font-weight-bold">Nazwisko</td>
+            <td className="font-weight-bold">Zdjęcie</td>
           </tr>
         </TableHead>
         <TableBody>
-          {Object.values(entries).map(({firstName, secondName, key}) =>
+          {Object.values(entries).map(({firstName, secondName, url, key}) =>
           <tr key={key}>
             <td>{firstName}</td>
             <td>{secondName}</td>
+            <td><img src={url} alt="Zdjęcie profilowe" className="img-fluid rounded h-25"/></td>
           </tr>
           )}
         </TableBody>

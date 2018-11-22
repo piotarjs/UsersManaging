@@ -1,6 +1,7 @@
 import typeToReducer from 'type-to-reducer';
 import {combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
+import {base, storage} from './firebase';
 
 
 const PENDING = 'PENDING';
@@ -8,6 +9,7 @@ const REJECTED = 'REJECTED';
 const FULFILLED = 'FULFILLED';
 const ADD = 'ADD';
 const GET = 'GET';
+
 
 
 // -------Dodawanie użytkownika do bazy-------
@@ -33,14 +35,20 @@ export const addError = (error) => ({
   error
 });
 
-export const  addUserToFirebase = ({firstName, secondName}) => async(dispatch, getState, base) => {
+export const  addUserToFirebase = ({firstName, secondName, uploadFile}) => async(dispatch) => {
   dispatch(addPending());
   const usersRef = await base.ref('users');
+  const pictureRef = await storage.ref('personalPicture');
   try{
-    await usersRef.push({
-      firstName,
-      secondName,
-      key: Date.now()
+    await pictureRef.child(`${Date.now()}`).put(uploadFile[0]).then((snapshot) => {
+      pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url) => {
+        usersRef.child(`${Date.now()}`).set({
+          firstName,
+          secondName,
+          url: url || 'test',
+          key: Date.now()
+        })
+      })
     });
     const users = await usersRef.once('value')
     dispatch(addSuccess(users.val()))
@@ -67,7 +75,7 @@ export const getError = (error) => ({
   error
 });
 
-export const  getUserFromFirebase = () => async(dispatch, getState, base) => {
+export const  getUserFromFirebase = () => async(dispatch) => {
   dispatch(getPending());
   try {
     const users = await base.ref('users').once('value');
