@@ -10,27 +10,13 @@ import module from './module';
 import { Provider } from 'react-redux';
 import { render } from 'react-dom';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import * as firebase from "firebase";
+import {base, storage} from './firebase';
 
-
-// --------Przygotowanie bazy danych--------
-const config = {
-  apiKey: "AIzaSyDaBb-y1E-RB70QGIYnyz2xI_8ZDkhoC1c",
-  authDomain: "reactlistwithfirebase.firebaseapp.com",
-  databaseURL: "https://reactlistwithfirebase.firebaseio.com",
-  projectId: "reactlistwithfirebase",
-  storageBucket: "reactlistwithfirebase.appspot.com",
-  messagingSenderId: "164262586929"
-};
-
-const base = firebase.initializeApp(config).database();
-
-//--------------------------------------------
 
 const store = createStore(
     module,
     composeWithDevTools(
-      applyMiddleware(thunk.withExtraArgument(base))
+      applyMiddleware(thunk.withExtraArgument({base, storage}))
     )
 );
 
