@@ -1,7 +1,6 @@
 import typeToReducer from 'type-to-reducer';
 import {combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
-import {base, storage} from './firebase';
 
 
 const PENDING = 'PENDING';
@@ -25,7 +24,8 @@ export const addPending = () => ({
   type: `${ADD}_${PENDING}`
 });
 
-export const addSuccess = (users) => ({
+export const addSuccess = (users) => console.log(users) ||
+ ({
   type: `${ADD}_${FULFILLED}`,
   users
 });
@@ -35,23 +35,27 @@ export const addError = (error) => ({
   error
 });
 
-export const  addUserToFirebase = ({firstName, secondName, uploadFile}) => async(dispatch) => {
+export const  addUserToFirebase = ({firstName, secondName, uploadFile}) => async(dispatch, getState, {base, storage}) => {
   dispatch(addPending());
   const usersRef = await base.ref('users');
   const pictureRef = await storage.ref('personalPicture');
+  const key = Date.now();
   try{
-    await pictureRef.child(`${Date.now()}`).put(uploadFile[0]).then((snapshot) => {
+    pictureRef.child(`${key}`).put(uploadFile[0]).then((snapshot) => {
       pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url) => {
-        usersRef.child(`${Date.now()}`).set({
+        usersRef.child(`${key}`).set({
           firstName,
           secondName,
-          url: url || 'test',
-          key: Date.now()
+          url,
+          key
         })
       })
     });
-    const users = await usersRef.once('value')
-    dispatch(addSuccess(users.val()))
+    //const users = await usersRef.once('value')
+    //dispatch(addSuccess(users.val()))
+    usersRef.on('value', (data) => {
+      dispatch(addSuccess(data.val()))
+    });
   } catch(error){
     dispatch(addError(error));
   };
@@ -67,7 +71,7 @@ export const getPending = () => ({
 
 export const getSuccess = (users) => ({
   type: `${GET}_${FULFILLED}`,
-  users
+  users: users
 });
 
 export const getError = (error) => ({
@@ -75,7 +79,7 @@ export const getError = (error) => ({
   error
 });
 
-export const  getUserFromFirebase = () => async(dispatch) => {
+export const  getUserFromFirebase = () => async(dispatch, getState, {base}) => {
   dispatch(getPending());
   try {
     const users = await base.ref('users').once('value');

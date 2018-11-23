@@ -10,17 +10,12 @@ import Loader from 'react-loaders';
 
 class AddUserToFirebase extends Component{
 
-  
   componentDidMount(){
     this.props.getUserFromFirebase();
   }
   
-  onSubmit(data){
-    this.props.addUserToFirebase(data);
-  }
-
   render(){
-    const {users, isLoading, isError, handleSubmit} = this.props;
+    const {users, isLoading, isError, handleSubmit, addUserToFirebase} = this.props;
     return(
       <Container>
         <Row className="mt-4">
@@ -33,17 +28,17 @@ class AddUserToFirebase extends Component{
             <Card>
               <CardBody>
                 <p className="h4 text-center py-4">Wpisz dane użytkownika</p>
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+                <form onSubmit={handleSubmit(addUserToFirebase)} className="md-form">
                   <div>
-                    <Field name="firstName" component='input' className="mb-2" placeholder="Imię" type="text" />
+                    <Field name="firstName" component='input' className="form-control mb-2" placeholder="Imię" type="text" />
                   </div>
                   <div>
-                    <Field name="secondName" component='input' className="mb-2" placeholder="Nazwisko" type="text" />
+                    <Field name="secondName" component='input' className="form-control mb-2" placeholder="Nazwisko" type="text" />
                   </div>
                   <div>
                     <Field name="uploadFile" component={UploadFile} />
                   </div>
-                  <button type="submit">Zapisz</button>
+                  <button type="submit" class="btn btn-success">Zapisz</button>
                 </form>
               </CardBody>
             </Card>
