@@ -1,6 +1,7 @@
 import typeToReducer from 'type-to-reducer';
 import {combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
+import { connectRouter, push } from 'connected-react-router';
 
 
 const PENDING = 'PENDING';
@@ -8,6 +9,7 @@ const REJECTED = 'REJECTED';
 const FULFILLED = 'FULFILLED';
 const ADD = 'ADD';
 const GET = 'GET';
+
 
 
 
@@ -24,8 +26,7 @@ export const addPending = () => ({
   type: `${ADD}_${PENDING}`
 });
 
-export const addSuccess = (users) => console.log(users) ||
- ({
+export const addSuccess = (users) => ({
   type: `${ADD}_${FULFILLED}`,
   users
 });
@@ -91,6 +92,14 @@ export const  getUserFromFirebase = () => async(dispatch, getState, {base}) => {
 
 // --------------------------------------------------
 
+export const redirect = (url) => (dispatch) => {
+  try{
+    dispatch(push(url));
+  }catch(e){
+    console.log(e);
+    
+  };
+}
 
 const firebaseReducer = typeToReducer({
   [ADD]: {
@@ -133,9 +142,14 @@ const firebaseReducer = typeToReducer({
   },
 }, baseInitialState);
 
-const rootReducer = combineReducers({
+/*const rootReducer = combineReducers({
   form: formReducer,
   firebase: firebaseReducer
-});
+});*/
 
-export default rootReducer;
+export default (history) => combineReducers({
+  router: connectRouter(history),
+  form: formReducer,
+  firebase: firebaseReducer
+})
+//export default rootReducer;

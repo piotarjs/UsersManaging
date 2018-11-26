@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, TableHead, TableBody, Card, CardBody } from "mdbreact";
 
-const ShowUsersList = ({ entries }) =>
+const ShowUsersList = ({ entries, redirect }) =>
   <Card>
     <CardBody>
       <h2 className="text-center mb-3">LISTA UŻYTKOWNIKÓW</h2>
@@ -15,7 +15,7 @@ const ShowUsersList = ({ entries }) =>
         </TableHead>
         <TableBody>
           {Object.values(entries).map(({firstName, secondName, url, key}) =>
-          <tr key={key}>
+          <tr key={key} onClick={() => redirect(`${key}`)}>
             <td>{firstName}</td>
             <td>{secondName}</td>
             <td><img src={url} alt="Zdjęcie profilowe" className="img-fluid rounded h-25"/></td>

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "connected-react-router": "^5.0.1",
     "firebase": "^5.5.8",
     "loaders.css": "^0.1.2",
     "mdbreact": "^4.8.1",
