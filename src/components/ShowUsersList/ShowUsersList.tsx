@@ -1,11 +1,12 @@
-import React from "react";
-import { Table, TableHead, TableBody, Card, CardBody } from "mdbreact";
+import { Card, CardBody, Table, TableBody, TableHead } from "mdbreact";
+import * as React from "react";
+import { Redirect, UsersList } from '../../interfaces';
 
-const ShowUsersList = ({ entries, redirect }) =>
+const ShowUsersList: React.SFC<Redirect & UsersList> = ({ users, redirect }) => 
   <Card>
     <CardBody>
       <h2 className="text-center mb-3">LISTA UŻYTKOWNIKÓW</h2>
-      <Table striped>
+      <Table>
         <TableHead>
           <tr>
             <td className="font-weight-bold">Imię</td>
@@ -14,7 +15,7 @@ const ShowUsersList = ({ entries, redirect }) =>
           </tr>
         </TableHead>
         <TableBody>
-          {Object.values(entries).map(({firstName, secondName, url, key}) =>
+          {Object.values(users).map(({firstName, secondName, url, key}) =>
           <tr key={key} onClick={() => redirect(`${key}`)}>
             <td>{firstName}</td>
             <td>{secondName}</td>
@@ -25,5 +26,5 @@ const ShowUsersList = ({ entries, redirect }) =>
       </Table>
     </CardBody>
   </Card>
-
+  
 export default ShowUsersList;

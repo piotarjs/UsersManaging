@@ -1,7 +1,8 @@
-import typeToReducer from 'type-to-reducer';
+import { connectRouter, push } from 'connected-react-router';
 import {combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
-import { connectRouter, push } from 'connected-react-router';
+import typeToReducer from 'type-to-reducer';
+import { UsersList } from './interfaces';
 
 
 const PENDING = 'PENDING';
@@ -16,24 +17,24 @@ const GET = 'GET';
 // -------Dodawanie użytkownika do bazy-------
 
 const baseInitialState = {
-  users: {},
-  isUploading: false,
+  isError: false,
   isLoading: false,
-  isError: false
-}
+  isUploading: false,
+  users: {}
+};
 
 export const addPending = () => ({
   type: `${ADD}_${PENDING}`
 });
 
-export const addSuccess = (users) => ({
+export const addSuccess = (users: UsersList) => ({
   type: `${ADD}_${FULFILLED}`,
   users
 });
 
-export const addError = (error) => ({
-  type: `${ADD}_${REJECTED}`,
-  error
+export const addError = (error: string) => ({
+  error,
+  type: `${ADD}_${REJECTED}`
 });
 
 export const  addUserToFirebase = ({firstName, secondName, uploadFile}) => async(dispatch, getState, {base, storage}) => {
@@ -46,14 +47,12 @@ export const  addUserToFirebase = ({firstName, secondName, uploadFile}) => async
       pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url) => {
         usersRef.child(`${key}`).set({
           firstName,
+          key,
           secondName,
-          url,
-          key
+          url
         })
       })
     });
-    //const users = await usersRef.once('value')
-    //dispatch(addSuccess(users.val()))
     usersRef.on('value', (data) => {
       dispatch(addSuccess(data.val()))
     });
@@ -70,14 +69,14 @@ export const getPending = () => ({
   type: `${GET}_${PENDING}`
 });
 
-export const getSuccess = (users) => ({
+export const getSuccess = (users: UsersList) => ({
   type: `${GET}_${FULFILLED}`,
-  users: users
+  users
 });
 
-export const getError = (error) => ({
+export const getError = (error: string) => ({
+  error,
   type: `${GET}_${REJECTED}`,
-  error
 });
 
 export const  getUserFromFirebase = () => async(dispatch, getState, {base}) => {
@@ -92,64 +91,57 @@ export const  getUserFromFirebase = () => async(dispatch, getState, {base}) => {
 
 // --------------------------------------------------
 
-export const redirect = (url) => (dispatch) => {
+export const redirect = (url: string) => (dispatch) => {
   try{
     dispatch(push(url));
-  }catch(e){
-    console.log(e);
-    
+  }catch(error){
+    dispatch(getError(error))
   };
 }
 
 const firebaseReducer = typeToReducer({
   [ADD]: {
-    PENDING: (state) => ({
-      ...state,
-      isUploading: true,
-      isError: false
-    }),
     FULFILLED: (state, {users}) => ({
       ...state,
-      users,
+      isError: false,
       isUploading: false,
-      isError: false
+      users
+    }),
+    PENDING: (state) => ({
+      ...state,
+      isError: false,
+      isUploading: true
     }),
     REJECTED: (state, {error}) => ({
       ...state,
       error,
-      isUploading: false,
-      isError: true
+      isError: true,
+      isUploading: false
     }), 
   },
   [GET]: {
-    PENDING: (state) => ({
-      ...state,
-      isLoading: true,
-      isError: false
-    }),
     FULFILLED: (state, {users}) => ({
       ...state,
-      users,
+      isError: false,
       isLoading: false,
-      isError: false
+      users
+    }),
+    PENDING: (state) => ({
+      ...state,
+      isError: false,
+      isLoading: true
     }),
     REJECTED: (state, {error}) => ({
       ...state,
       error,
-      isLoading: false,
-      isError: true
+      isError: true,
+      isLoading: false
     }), 
   },
 }, baseInitialState);
 
-/*const rootReducer = combineReducers({
-  form: formReducer,
-  firebase: firebaseReducer
-});*/
-
 export default (history) => combineReducers({
-  router: connectRouter(history),
+  firebase: firebaseReducer,
   form: formReducer,
-  firebase: firebaseReducer
-})
-//export default rootReducer;
+  router: connectRouter(history)
+});

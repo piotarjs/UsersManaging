@@ -1,8 +1,6 @@
-import React from "react";
+import * as React from "react";
+import { Field, reduxForm } from "redux-form";
 import UploadFile from "../UploadFile";
-import {Field} from "redux-form";
-
-
 
 const AddUserForm = ({handleSubmit, addUserToFirebase}) =>
   <div>
@@ -21,5 +19,6 @@ const AddUserForm = ({handleSubmit, addUserToFirebase}) =>
       </form>
   </div>
       
-
-export default AddUserForm;
+export default reduxForm({
+  form: 'List'
+})(AddUserForm);

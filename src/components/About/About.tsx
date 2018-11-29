@@ -1,7 +1,18 @@
-import React from 'react';
 import { Container, Row } from "mdbreact";
+import * as React from 'react';
+import { Action, ActionCreator } from 'redux'
 
-const About = ( {user, redirect }) =>
+interface User{
+  user:{
+    firstName: string,
+    key: string,
+    secondName: string,
+    url: string
+  }
+  redirect: ActionCreator<Action>
+}
+
+const About : React.SFC<User> = ( {user, redirect }) =>
   <Container>
     <button type="submit" className="btn btn-success" onClick={() => redirect('/')}>Powrót</button>
     {user &&
@@ -14,5 +25,6 @@ const About = ( {user, redirect }) =>
       <h4 className="font-weight-bold mb-3">{user.firstName} {user.secondName}</h4>
     </Row>}
   </Container>
+
 
 export default About;
