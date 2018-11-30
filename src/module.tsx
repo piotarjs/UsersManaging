@@ -2,7 +2,7 @@ import { connectRouter, push } from 'connected-react-router';
 import {combineReducers, Dispatch} from 'redux';
 import {reducer as formReducer} from 'redux-form';
 import typeToReducer from 'type-to-reducer';
-import { UsersList } from './interfaces';
+import { Database, Snapshot, UsersList } from './interfaces';
 
 
 const PENDING = 'PENDING';
@@ -39,13 +39,14 @@ export const addError = (error: string) => ({
 
 export const  addUserToFirebase = ({firstName, secondName, uploadFile}
   :
-  {firstName:string, secondName: string, uploadFile:string[]}) => async(dispatch: Dispatch, getState, {base, storage}) => {
+  {firstName:string, secondName: string, uploadFile:string[]}) => 
+  async(dispatch: Dispatch, getState, {base, storage}: {base: Database, storage: Database}) => {
   dispatch(addPending());
   const usersRef = await base.ref('users');
   const pictureRef = await storage.ref('personalPicture');
   const key = Date.now();
   try{
-    pictureRef.child(`${key}`).put(uploadFile[0]).then((snapshot) => {
+    pictureRef.child(`${key}`).put(uploadFile[0]).then((snapshot: Snapshot) => {
       pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url:string) => {
         usersRef.child(`${key}`).set({
           firstName,
@@ -81,7 +82,7 @@ export const getError = (error: string) => ({
   type: `${GET}_${REJECTED}`,
 });
 
-export const  getUserFromFirebase = () => async(dispatch: Dispatch, getState, {base}) => {
+export const  getUserFromFirebase = () => async(dispatch: Dispatch, getState, {base}: {base:Database}) => {
   dispatch(getPending());
   try {
     const users = await base.ref('users').once('value');

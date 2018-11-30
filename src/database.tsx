@@ -1,4 +1,5 @@
 import * as firebase from 'firebase';
+import { Database } from './interfaces'
 
 const config = {
   apiKey: "AIzaSyDaBb-y1E-RB70QGIYnyz2xI_8ZDkhoC1c",
@@ -9,5 +10,5 @@ const config = {
   storageBucket: "reactlistwithfirebase.appspot.com"
 };
 firebase.initializeApp(config);
-export const base = firebase.database();
-export const storage = firebase.storage();
+export const base: Database = firebase.database();
+export const storage: Database = firebase.storage();

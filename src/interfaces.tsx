@@ -42,3 +42,12 @@ export interface AddUserProps{
       isError: boolean,
       isLoading: boolean,
 }
+export interface Database{
+    ref(path: string)
+}
+
+export interface Snapshot{
+    metadata:{
+        name: string
+    }
+}
