@@ -9,14 +9,12 @@
     "@types/react-redux": "^6.0.10",
     "@types/react-router": "^4.4.1",
     "awesome-typescript-loader": "^5.2.1",
-    "axios": "^0.18.0",
     "connected-react-router": "^5.0.1",
     "firebase": "^5.5.8",
     "loaders.css": "^0.1.2",
     "mdbreact": "^4.8.1",
     "node-sass": "^4.10.0",
     "react": "^16.5.2",
-    "react-css-modules": "^4.7.7",
     "react-dom": "^16.5.2",
     "react-icon": "^1.0.0",
     "react-loaders": "^3.0.1",
@@ -48,7 +46,6 @@
   "devDependencies": {
     "@types/firebase": "^3.2.1",
     "@types/history": "^4.7.2",
-    "redux-devtools-extension": "^2.13.5",
-    "redux-saga": "^0.16.2"
+    "redux-devtools-extension": "^2.13.5"
   }
 }

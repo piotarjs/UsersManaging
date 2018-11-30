@@ -1,5 +1,5 @@
 import { connectRouter, push } from 'connected-react-router';
-import {combineReducers} from 'redux';
+import {combineReducers, Dispatch} from 'redux';
 import {reducer as formReducer} from 'redux-form';
 import typeToReducer from 'type-to-reducer';
 import { UsersList } from './interfaces';
@@ -37,14 +37,16 @@ export const addError = (error: string) => ({
   type: `${ADD}_${REJECTED}`
 });
 
-export const  addUserToFirebase = ({firstName, secondName, uploadFile}) => async(dispatch, getState, {base, storage}) => {
+export const  addUserToFirebase = ({firstName, secondName, uploadFile}
+  :
+  {firstName:string, secondName: string, uploadFile:string[]}) => async(dispatch: Dispatch, getState, {base, storage}) => {
   dispatch(addPending());
   const usersRef = await base.ref('users');
   const pictureRef = await storage.ref('personalPicture');
   const key = Date.now();
   try{
     pictureRef.child(`${key}`).put(uploadFile[0]).then((snapshot) => {
-      pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url) => {
+      pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url:string) => {
         usersRef.child(`${key}`).set({
           firstName,
           key,
@@ -79,7 +81,7 @@ export const getError = (error: string) => ({
   type: `${GET}_${REJECTED}`,
 });
 
-export const  getUserFromFirebase = () => async(dispatch, getState, {base}) => {
+export const  getUserFromFirebase = () => async(dispatch: Dispatch, getState, {base}) => {
   dispatch(getPending());
   try {
     const users = await base.ref('users').once('value');
@@ -91,7 +93,7 @@ export const  getUserFromFirebase = () => async(dispatch, getState, {base}) => {
 
 // --------------------------------------------------
 
-export const redirect = (url: string) => (dispatch) => {
+export const redirect = (url: string) => (dispatch: Dispatch) => {
   try{
     dispatch(push(url));
   }catch(error){
@@ -101,7 +103,7 @@ export const redirect = (url: string) => (dispatch) => {
 
 const firebaseReducer = typeToReducer({
   [ADD]: {
-    FULFILLED: (state, {users}) => ({
+    FULFILLED: (state, {users}:{users: UsersList}) => ({
       ...state,
       isError: false,
       isUploading: false,
@@ -112,7 +114,7 @@ const firebaseReducer = typeToReducer({
       isError: false,
       isUploading: true
     }),
-    REJECTED: (state, {error}) => ({
+    REJECTED: (state, {error}:{error:string}) => ({
       ...state,
       error,
       isError: true,
@@ -120,7 +122,7 @@ const firebaseReducer = typeToReducer({
     }), 
   },
   [GET]: {
-    FULFILLED: (state, {users}) => ({
+    FULFILLED: (state, {users}:{users: UsersList}) => ({
       ...state,
       isError: false,
       isLoading: false,
@@ -131,7 +133,7 @@ const firebaseReducer = typeToReducer({
       isError: false,
       isLoading: true
     }),
-    REJECTED: (state, {error}) => ({
+    REJECTED: (state, {error}:{error:string}) => ({
       ...state,
       error,
       isError: true,

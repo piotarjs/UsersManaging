@@ -1,26 +1,15 @@
 import { Card, CardBody, Col, Container, Row } from "mdbreact";
 import * as React from "react";
 import Loader from 'react-loaders';
-import { Action, ActionCreator } from 'redux';
-import { UsersList } from '../../interfaces';
+import { AddUserProps, GetUsersFromFirebase, UsersList } from '../../interfaces';
 import About from "../About";
 import AddUserForm from "../AddUserForm";
 import ShowUsersList from "../ShowUsersList";
 import "./AddUserToFirebase.css";
 import "./AddUserToFirebase.scss";
 
-interface Props {
-  getUserFromFirebase: ActionCreator<Action>,
-  match: {
-    params: {
-      key: string
-    }
-  },
-  isError: boolean,
-  isLoading: boolean,
-}
 
-class AddUserToFirebase extends React.Component<Props & UsersList> {
+class AddUserToFirebase extends React.Component<GetUsersFromFirebase & AddUserProps & UsersList> {
   public componentDidMount(){
     this.props.getUserFromFirebase();
   }

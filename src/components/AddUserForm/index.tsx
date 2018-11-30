@@ -3,7 +3,7 @@ import { addUserToFirebase } from '../../module';
 import AddUserForm from './AddUserForm';
 
 
-const mapStateToProps = ({ firebase: { isError, isLoading, users } }) => ({
+const mapStateToProps = ({ firebase: { isError, isLoading, users }  }) => ({
     isError,
     isLoading,
     users
@@ -13,4 +13,3 @@ const mapDispatchToProps = {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddUserForm);
-
