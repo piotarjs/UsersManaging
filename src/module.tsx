@@ -10,17 +10,21 @@ const FULFILLED = 'FULFILLED';
 const ADD = 'ADD';
 const GET = 'GET';
 
-
-
-
-// -------Dodawanie użytkownika do bazy-------
+interface State{
+  isError: false,
+  isLoading: false,
+  isUploading: false,
+  users: UsersList
+}
 
 const baseInitialState = {
   isError: false,
   isLoading: false,
   isUploading: false,
-  users: {}
+  users: {} 
 };
+
+// -------Dodawanie użytkownika do bazy-------
 
 export const addPending = () => ({
   type: `${ADD}_${PENDING}`
@@ -111,18 +115,18 @@ export const redirect = (url: string): Thunk => (dispatch) => {
 
 const firebaseReducer = typeToReducer({
   [ADD]: {
-    FULFILLED: (state, {users}:{users: UsersList}) => ({
+    FULFILLED: (state: State, {users}:{users: UsersList}) => ({
       ...state,
       isError: false,
       isUploading: false,
       users
     }),
-    PENDING: (state) => ({
+    PENDING: (state: State) => ({
       ...state,
       isError: false,
       isUploading: true
     }),
-    REJECTED: (state, {error}:{error:string}) => ({
+    REJECTED: (state: State, {error}:{error:string}) => ({
       ...state,
       error,
       isError: true,
@@ -130,18 +134,18 @@ const firebaseReducer = typeToReducer({
     }), 
   },
   [GET]: {
-    FULFILLED: (state, {users}:{users: UsersList}) => ({
+    FULFILLED: (state: State, {users}:{users: UsersList}) => ({
       ...state,
       isError: false,
       isLoading: false,
       users
     }),
-    PENDING: (state) => ({
+    PENDING: (state: State) => ({
       ...state,
       isError: false,
       isLoading: true
     }),
-    REJECTED: (state, {error}:{error:string}) => ({
+    REJECTED: (state: State, {error}:{error:string}) => ({
       ...state,
       error,
       isError: true,
