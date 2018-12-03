@@ -8,6 +8,7 @@ const mapStateToProps = ({ firebase: { isError, isLoading, users }  }) => ({
     isLoading,
     users
 });
+
 const mapDispatchToProps = {
     addUserToFirebase
 };

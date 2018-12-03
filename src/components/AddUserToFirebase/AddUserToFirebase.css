@@ -1,10 +1,10 @@
 
-/*.table-striped tbody tr:hover {
-  background-color: #FA7A7A;
+tbody tr:hover {
+  background-color: 	#c4f3ff;
   cursor: pointer;
-  transition: 1.5s;
-}*/
-.table-striped tbody tr {
+  transition: 0.9s;
+}
+tbody tr {
   transition: 0.9s;
 }
 table td {

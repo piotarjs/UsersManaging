@@ -1,9 +1,8 @@
 import { connectRouter, push } from 'connected-react-router';
-import {combineReducers, Dispatch} from 'redux';
+import { combineReducers } from 'redux';
 import {reducer as formReducer} from 'redux-form';
 import typeToReducer from 'type-to-reducer';
-import { Database, Snapshot, UsersList } from './interfaces';
-
+import { Thunk, UsersList } from './interfaces';
 
 const PENDING = 'PENDING';
 const REJECTED = 'REJECTED';
@@ -39,14 +38,14 @@ export const addError = (error: string) => ({
 
 export const  addUserToFirebase = ({firstName, secondName, uploadFile}
   :
-  {firstName:string, secondName: string, uploadFile:string[]}) => 
-  async(dispatch: Dispatch, getState, {base, storage}: {base: Database, storage: Database}) => {
+  {firstName:string, secondName: string, uploadFile: {}}): Thunk => 
+  async(dispatch, getState, {base, storage}) => {
   dispatch(addPending());
   const usersRef = await base.ref('users');
   const pictureRef = await storage.ref('personalPicture');
   const key = Date.now();
   try{
-    pictureRef.child(`${key}`).put(uploadFile[0]).then((snapshot: Snapshot) => {
+    pictureRef.child(`${key}`).put(uploadFile[0]).then((snapshot) => {
       pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url:string) => {
         usersRef.child(`${key}`).set({
           firstName,
@@ -57,7 +56,9 @@ export const  addUserToFirebase = ({firstName, secondName, uploadFile}
       })
     });
     usersRef.on('value', (data) => {
-      dispatch(addSuccess(data.val()))
+      if (data) {
+        dispatch(addSuccess(data.val()))
+      }
     });
   } catch(error){
     dispatch(addError(error));
@@ -82,7 +83,9 @@ export const getError = (error: string) => ({
   type: `${GET}_${REJECTED}`,
 });
 
-export const  getUserFromFirebase = () => async(dispatch: Dispatch, getState, {base}: {base:Database}) => {
+
+
+export const  getUserFromFirebase = (): Thunk => async(dispatch, getState, { base }) => {
   dispatch(getPending());
   try {
     const users = await base.ref('users').once('value');
@@ -94,13 +97,17 @@ export const  getUserFromFirebase = () => async(dispatch: Dispatch, getState, {b
 
 // --------------------------------------------------
 
-export const redirect = (url: string) => (dispatch: Dispatch) => {
+// -------------------- Routing --------------------
+
+export const redirect = (url: string): Thunk => (dispatch) => {
   try{
     dispatch(push(url));
   }catch(error){
     dispatch(getError(error))
   };
 }
+
+// -------------------------------------------------
 
 const firebaseReducer = typeToReducer({
   [ADD]: {

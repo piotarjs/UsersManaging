@@ -1,21 +1,32 @@
 import { Card, CardBody, Col, Container, Row } from "mdbreact";
 import * as React from "react";
 import Loader from 'react-loaders';
-import { AddUserProps, GetUsersFromFirebase, UsersList } from '../../interfaces';
+import { Action, ActionCreator } from 'redux';
+import { UsersList } from '../../interfaces';
 import About from "../About";
 import AddUserForm from "../AddUserForm";
 import ShowUsersList from "../ShowUsersList";
 import "./AddUserToFirebase.css";
 import "./AddUserToFirebase.scss";
 
+interface Props{
+  match: {
+    params: {
+      key: string
+    }
+  },
+  isError: boolean,
+  isLoading: boolean,
+  getUserFromFirebase: ActionCreator<Action>
+}
 
-class AddUserToFirebase extends React.Component<GetUsersFromFirebase & AddUserProps & UsersList> {
-  public componentDidMount(){
+class AddUserToFirebase extends React.Component<Props & UsersList> {
+  public componentDidMount() {
     this.props.getUserFromFirebase();
   }
-  public render(){
-    const {users, isLoading, isError, match } = this.props;
-    return(
+  public render() {
+    const { users, isLoading, isError, match } = this.props;
+    return (
       <Container>
         <Row className="mt-4">
           <Col lg="8">
@@ -27,9 +38,10 @@ class AddUserToFirebase extends React.Component<GetUsersFromFirebase & AddUserPr
             <Card>
               <CardBody>
                 {match.params.key? 
-                <About user={users[match.params.key]}/> 
+                  <About user={users[match.params.key]} /> 
                 : 
-                <AddUserForm/>}
+                  <AddUserForm />
+                }
               </CardBody>
             </Card>
           </Col>

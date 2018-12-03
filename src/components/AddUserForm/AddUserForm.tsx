@@ -1,9 +1,14 @@
 import * as React from "react";
+import { Action, ActionCreator } from 'redux';
 import { Field, reduxForm } from "redux-form";
-import { AddUserToFirebase } from '../../interfaces';
 import UploadFile from "../UploadFile";
 
-const AddUserForm: React.SFC<AddUserToFirebase> = ({handleSubmit, addUserToFirebase}) =>
+interface Props{
+  addUserToFirebase: ActionCreator<Action>,
+  handleSubmit
+}
+
+const AddUserForm: React.SFC<Props> = ({ handleSubmit, addUserToFirebase }) =>
   <div>
     <p className="h4 text-center py-4">Wpisz dane użytkownika</p>
       <form onSubmit={handleSubmit(addUserToFirebase)} className="md-form">

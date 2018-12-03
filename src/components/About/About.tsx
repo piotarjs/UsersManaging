@@ -1,8 +1,17 @@
 import { Container, Row } from "mdbreact";
 import * as React from 'react';
-import { Redirect, User } from '../../interfaces';
+import { Redirect } from '../../interfaces';
 
-const About : React.SFC<Redirect & User> = ( {user: {firstName, secondName, url}, redirect }) =>
+interface Props{
+  user:{
+    firstName: string,
+    key: string,
+    secondName: string,
+    url: string
+  }
+}
+
+const About : React.SFC<Redirect & Props> = ( {user: {firstName, secondName, url}, redirect }) =>
   <Container>
     <button type="submit" className="btn btn-success" onClick={() => redirect('/')}>Powrót</button>
     {(firstName || secondName || url) &&
