@@ -1,15 +1,16 @@
-import { Card, CardBody, Col, Container, Row } from "mdbreact";
-import * as React from "react";
+import { Card, CardBody, Col, Container, Row } from 'mdbreact';
+import * as React from 'react';
 import Loader from 'react-loaders';
 import { Action, ActionCreator } from 'redux';
 import { UsersList } from '../../interfaces';
-import About from "../About";
-import AddUserForm from "../AddUserForm";
-import ShowUsersList from "../ShowUsersList";
-import "./AddUserToFirebase.css";
-import "./AddUserToFirebase.scss";
+import About from '../About';
+import AddUserForm from '../AddUserForm';
+import ShowUsersList from '../ShowUsersList';
+import './AddUserToFirebase.css';
+import './AddUserToFirebase.scss';
 
-interface Props{
+interface Props {
+  users: UsersList['users'],
   match: {
     params: {
       key: string
@@ -20,7 +21,7 @@ interface Props{
   getUserFromFirebase: ActionCreator<Action>
 }
 
-class AddUserToFirebase extends React.Component<Props & UsersList> {
+class AddUserToFirebase extends React.Component<Props> {
   public componentDidMount() {
     this.props.getUserFromFirebase();
   }
@@ -30,16 +31,16 @@ class AddUserToFirebase extends React.Component<Props & UsersList> {
       <Container>
         <Row className="mt-4">
           <Col lg="8">
-            {isLoading && <Loader type="ball-clip-rotate-multiple" active={true} />}
+            {isLoading && <Row className="justify-content-center mt-5"><Loader type="ball-clip-rotate-multiple" active={true} /></Row>}
             {isError && <p>Wystąpił błąd podczas pobierania danych!!!</p>}
-            {Object.values(users).length > 0 && <ShowUsersList/>}
+            {Object.values(users).length > 0 && <ShowUsersList />}
           </Col>
           <Col lg="4">
             <Card>
               <CardBody>
-                {match.params.key? 
-                  <About user={users[match.params.key]} /> 
-                : 
+                {match.params.key ?
+                  <About user={users[match.params.key]} />
+                  :
                   <AddUserForm />
                 }
               </CardBody>

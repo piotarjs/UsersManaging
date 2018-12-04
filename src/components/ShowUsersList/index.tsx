@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
-import { redirect } from '../../module';
+import { redirect, State } from '../../module';
 import ShowUsersList from './ShowUsersList';
 
 
-const mapStateToProps = ({ firebase: {  users } }) => ({
+const mapStateToProps = ({ firebase: {  users } }: State) => ({
     users
 });
 

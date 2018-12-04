@@ -1,5 +1,4 @@
-import { Action, ActionCreator, Dispatch } from 'redux';
-
+import { Action, ActionCreator } from 'redux';
 
 export interface UsersList{
     users: {
@@ -16,4 +15,4 @@ export interface Redirect{
     redirect: ActionCreator<Action>
 }
 
-export type Thunk = (dispatch: Dispatch, getState: () => any, thunk: { base: firebase.database.Database, storage: firebase.storage.Storage }) => void
+export interface ExtraArgument { base: firebase.database.Database, storage: firebase.storage.Storage }

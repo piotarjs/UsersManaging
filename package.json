@@ -8,6 +8,7 @@
     "@types/react-dom": "^16.0.10",
     "@types/react-redux": "^6.0.10",
     "@types/react-router": "^4.4.1",
+    "@types/redux-form": "^7.4.12",
     "awesome-typescript-loader": "^5.2.1",
     "connected-react-router": "^5.0.1",
     "firebase": "^5.5.8",

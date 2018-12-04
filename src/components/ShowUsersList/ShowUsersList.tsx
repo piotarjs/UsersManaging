@@ -1,8 +1,13 @@
-import { Card, CardBody, Table, TableBody, TableHead } from "mdbreact";
-import * as React from "react";
+import { Card, CardBody, Table, TableBody, TableHead } from 'mdbreact';
+import * as React from 'react';
 import { Redirect, UsersList } from '../../interfaces';
 
-const ShowUsersList: React.SFC<Redirect & UsersList> = ({ users, redirect }) => 
+interface Props {
+  users: UsersList['users'],
+  redirect: Redirect['redirect']
+};
+
+const ShowUsersList: React.FunctionComponent<Props> = ({ redirect, users }) =>
   <Card>
     <CardBody>
       <h2 className="text-center mb-3">LISTA UŻYTKOWNIKÓW</h2>
@@ -15,16 +20,16 @@ const ShowUsersList: React.SFC<Redirect & UsersList> = ({ users, redirect }) =>
           </tr>
         </TableHead>
         <TableBody>
-          {Object.values(users).map(({firstName, secondName, url, key}) =>
-          <tr key={key} onClick={() => redirect(`${key}`)}>
-            <td>{firstName}</td>
-            <td>{secondName}</td>
-            <td><img src={url} alt="Zdjęcie profilowe" className="img-fluid rounded h-25"/></td>
-          </tr>
+          {Object.values(users).map(({ firstName, secondName, url, key }) =>
+            <tr key={key} onClick={() => redirect(`${key}`)}>
+              <td>{firstName}</td>
+              <td>{secondName}</td>
+              <td><img src={url} alt="Zdjęcie profilowe" className="img-fluid rounded h-25" /></td>
+            </tr>
           )}
         </TableBody>
       </Table>
     </CardBody>
   </Card>
-  
+
 export default ShowUsersList;

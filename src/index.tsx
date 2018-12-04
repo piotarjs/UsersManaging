@@ -6,7 +6,7 @@ import 'mdbreact/dist/css/mdb.css';
 import * as React from "react";
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { Route, Switch } from 'react-router'; 
+import { Route, Switch } from 'react-router';
 import { applyMiddleware, createStore } from 'redux';
 // import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
@@ -23,7 +23,7 @@ const history = createBrowserHistory();
 const store = createStore(
   createRootReducer(history),
   applyMiddleware(
-    thunk.withExtraArgument({base, storage}),
+    thunk.withExtraArgument({ base, storage }),
     routerMiddleware(history)
   ),
 );
@@ -33,7 +33,7 @@ const List = () => (
     <ConnectedRouter history={history}>
       <div>
         <Switch>
-          <Route path={'/:key?'}  component={AddUserToFirebase} />
+          <Route path={`/:key?`} component={AddUserToFirebase} />
         </Switch>
       </div>
     </ConnectedRouter>

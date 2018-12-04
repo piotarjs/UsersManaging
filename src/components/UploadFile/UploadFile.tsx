@@ -1,8 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
+import { WrappedFieldProps } from 'redux-form';
 
-const UploadFile = ({ input }) =>
+const UploadFile: React.FunctionComponent<WrappedFieldProps> = ({ input }) =>
   <div>
-    <input type="file" className="file-path validate mb-2" {...input} value={undefined}/>
+    <input type="file" className="file-path validate mb-2" {...input} value={undefined} />
   </div>
 
 export default UploadFile;
