@@ -7,8 +7,7 @@ import * as React from "react";
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router';
-import { applyMiddleware, createStore } from 'redux';
-// import { composeWithDevTools } from 'redux-devtools-extension';
+import { applyMiddleware, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import AddUserToFirebase from "./components/AddUserToFirebase";
 import { base, storage } from './database';
@@ -18,14 +17,17 @@ import createRootReducer from './module';
 
 
 const history = createBrowserHistory();
-
+// @ts-ignore
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
   createRootReducer(history),
-  applyMiddleware(
-    thunk.withExtraArgument({ base, storage }),
-    routerMiddleware(history)
-  ),
+  composeEnhancers(
+    applyMiddleware(
+      thunk.withExtraArgument({ base, storage }),
+      routerMiddleware(history)
+    ),
+  )
 );
 
 const List = () => (
@@ -33,7 +35,7 @@ const List = () => (
     <ConnectedRouter history={history}>
       <div>
         <Switch>
-          <Route path={`/:key?`} component={AddUserToFirebase} />
+          <Route path={`/:key?/:action?`} component={AddUserToFirebase} />
         </Switch>
       </div>
     </ConnectedRouter>

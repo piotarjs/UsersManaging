@@ -1,23 +1,22 @@
 import { Card, CardBody, Col, Container, Row } from 'mdbreact';
 import * as React from 'react';
 import Loader from 'react-loaders';
+import { match as Match } from 'react-router';
 import { Action, ActionCreator } from 'redux';
 import { UsersList } from '../../interfaces';
 import About from '../About';
 import AddUserForm from '../AddUserForm';
+import EditUser from '../EditUser';
 import ShowUsersList from '../ShowUsersList';
 import './AddUserToFirebase.css';
 import './AddUserToFirebase.scss';
 
 interface Props {
   users: UsersList['users'],
-  match: {
-    params: {
-      key: string
-    }
-  },
+  match: Match<{key: string, action: string}>,
   isError: boolean,
   isLoading: boolean,
+  editUser: ActionCreator<Action>,
   getUserFromFirebase: ActionCreator<Action>
 }
 
@@ -33,15 +32,16 @@ class AddUserToFirebase extends React.Component<Props> {
           <Col lg="8">
             {isLoading && <Row className="justify-content-center mt-5"><Loader type="ball-clip-rotate-multiple" active={true} /></Row>}
             {isError && <p>Wystąpił błąd podczas pobierania danych!!!</p>}
-            {Object.values(users).length > 0 && <ShowUsersList />}
+            {users != null? <ShowUsersList /> : <h2>Brak listy do wyświetlenia</h2>}
           </Col>
           <Col lg="4">
             <Card>
               <CardBody>
-                {match.params.key ?
-                  <About user={users[match.params.key]} />
-                  :
-                  <AddUserForm />
+                {match.params.key
+                  ? match.params.action && match.params.action === 'edit'
+                    ? <EditUser user={users[match.params.key]}/>
+                    : <About user={users[match.params.key]}/> 
+                  : <AddUserForm />
                 }
               </CardBody>
             </Card>

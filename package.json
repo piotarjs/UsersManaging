@@ -10,6 +10,7 @@
     "@types/react-router": "^4.4.1",
     "@types/redux-form": "^7.4.12",
     "awesome-typescript-loader": "^5.2.1",
+    "classnames": "^2.2.6",
     "connected-react-router": "^5.0.1",
     "firebase": "^5.5.8",
     "loaders.css": "^0.1.2",

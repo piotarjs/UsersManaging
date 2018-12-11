@@ -1,7 +1,7 @@
 import { connectRouter, push } from 'connected-react-router';
 import { History } from 'history';
 import { Action, combineReducers } from 'redux';
-import { reducer as formReducer } from 'redux-form';
+import { reducer as formReducer, reset } from 'redux-form';
 import { ThunkAction } from 'redux-thunk';
 import typeToReducer from 'type-to-reducer';
 import { ExtraArgument, UsersList } from './interfaces';
@@ -11,16 +11,24 @@ import { ExtraArgument, UsersList } from './interfaces';
 
 export interface State {
   firebase: {
+    inputFileKey: string,
+    isEdited: string,
     isError: false,
     isLoading: false,
     isUploading: false,
+    toDelete: string,
+    toEdit: string,
     users: UsersList['users']
   }
 };
 
-interface AddUserToFirebase { firstName: string, secondName: string, uploadFile: any };
+interface AddUserToFirebase { firstName: string, key: string, secondName: string, uploadFile: any };
+
+interface DeleteUserFromFirebase { key: string };
 
 type FirebaseReducer = State['firebase'];
+
+type Thunk = ThunkAction<void, State, ExtraArgument, Action>;
 
 // ---------------------------------------------------
 
@@ -29,62 +37,119 @@ type FirebaseReducer = State['firebase'];
 const PENDING = 'PENDING';
 const REJECTED = 'REJECTED';
 const FULFILLED = 'FULFILLED';
-const ADD = 'ADD';
-const GET = 'GET';
+const CREATE = 'CREATE';
+const RETRIEVE = 'RETRIEVE';
+const DELETE = 'DELETE';
+const EDIT = 'EDIT';
+const UPDATE = 'UPDATE';
+const DETAILS = 'DETAILS';
+const DELETE_HOVER = 'DELETE_HOVER';
+const EDIT_HOVER = 'EDIT_HOVER';
+const CHANGE_KEY = 'CHANGE_KEY';
+const CHANGE_INPUT_VALUE = 'CHANGE_INPUT_VALUE';
 
 // ---------------------------------------------------
 
 // --------------- Inicjalizacja stanu ---------------
 
 const baseInitialState = {
+  inputFileKey: Date.now().toString(),
+  isEdited: undefined,
   isError: false,
   isLoading: false,
   isUploading: false,
-  users: {}
+  toDelete: "",
+  toEdit: "",
+  user: {},
+  users: {},
 };
 
 // ----------------------------------------------------
 
+// --- Wstawianie pliku do Storage Firebase oraz zapis rekordu do Database Firebase ---
+
+const addUser = ({ firstName, key, secondName, uploadFile }: AddUserToFirebase, usersRef, pictureRef) => {
+  if (key === undefined) {
+    key = Date.now().toString();
+  }
+  pictureRef.child(key).put(uploadFile[0]).then((snapshot) => {
+    pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url: string) => {
+      usersRef.child(key).set({
+        firstName,
+        key,
+        secondName,
+        url
+      })
+    })
+  });
+}
+
+// ------------------------------------------------------------------------------------
+
 // ----------- Dodawanie użytkownika do bazy -----------
 
 export const addPending = () => ({
-  type: `${ADD}_${PENDING}`
+  type: `${CREATE}_${PENDING}`
 });
 
 export const addSuccess = (users: FirebaseReducer['users']) => ({
-  type: `${ADD}_${FULFILLED}`,
+  type: `${CREATE}_${FULFILLED}`,
   users
 });
 
 export const addError = (error: Error) => ({
   error: error.message,
-  type: `${ADD}_${REJECTED}`
+  type: `${CREATE}_${REJECTED}`
 });
 
-export const addUserToFirebase = ({ firstName, secondName, uploadFile }: AddUserToFirebase): ThunkAction<void, State, ExtraArgument, Action> =>
+export const addUserToFirebase = (user: AddUserToFirebase): Thunk =>
   async (dispatch, getState, { base, storage }) => {
     dispatch(addPending());
-    const usersRef = await base.ref('users');
-    const pictureRef = await storage.ref('personalPicture');
-    const key = Date.now();
+    const usersRef = base.ref('users');
+    const pictureRef = storage.ref('personalPicture');
     try {
-      pictureRef.child(`${key}`).put(uploadFile[0]).then((snapshot) => {
-        pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url: string) => {
-          usersRef.child(`${key}`).set({
-            firstName,
-            key,
-            secondName,
-            url
-          })
-        })
-      });
+      await addUser(user, usersRef, pictureRef);
       usersRef.on('value', (data) => {
         if (data) {
           dispatch(addSuccess(data.val()))
         }
       });
+      dispatch(reset('List'));
     } catch (error) {
       dispatch(addError(error));
+    };
+  };
+
+// ---------------------------------------------------
+
+// ----------- Usunięcie użytkownika z bazy -----------
+
+export const deleteSuccess = (users: FirebaseReducer['users']) => ({
+  type: `${DELETE}_${FULFILLED}`,
+  users
+});
+
+export const deleteError = (error: Error) => ({
+  error: error.message,
+  type: `${DELETE}_${REJECTED}`
+});
+
+export const deleteUserFromFirebase = (key: DeleteUserFromFirebase): Thunk =>
+  (dispatch, getState, { base, storage }) => {
+    const usersRef = base.ref('users');
+    const pictureRef = storage.ref('personalPicture');
+    try {
+      usersRef.child(`${key}`).remove().then(
+        () => pictureRef.child(`${key}`).delete().then(
+          () => usersRef.on('value', (data) => {
+            if (data) {
+              dispatch(deleteSuccess(data.val()))
+            }
+          })
+        ).then(() => redirect('/'))
+      );
+    } catch (error) {
+      dispatch(deleteError(error));
     };
   };
 
@@ -93,20 +158,20 @@ export const addUserToFirebase = ({ firstName, secondName, uploadFile }: AddUser
 // ------- Pobranie listy użytkowników z bazy -------
 
 export const getPending = () => ({
-  type: `${GET}_${PENDING}`
+  type: `${RETRIEVE}_${PENDING}`
 });
 
 export const getSuccess = (users: FirebaseReducer['users']) => ({
-  type: `${GET}_${FULFILLED}`,
+  type: `${RETRIEVE}_${FULFILLED}`,
   users
 });
 
 export const getError = (error: Error) => ({
   error: error.message,
-  type: `${GET}_${REJECTED}`,
+  type: `${RETRIEVE}_${REJECTED}`,
 });
 
-export const getUserFromFirebase = (): ThunkAction<void, State, ExtraArgument, Action> => async (dispatch, getState, { base }) => {
+export const getUserFromFirebase = (): Thunk => async (dispatch, getState, { base }) => {
   dispatch(getPending());
   try {
     const users = await base.ref('users').once('value');
@@ -118,9 +183,90 @@ export const getUserFromFirebase = (): ThunkAction<void, State, ExtraArgument, A
 
 // --------------------------------------------------
 
+// -- Edycja użytkownika - przekazanie jego danych --
+
+export const editSuccess = (user) => ({
+  type: `${EDIT}_${FULFILLED}`,
+  user
+})
+export const editError = (error: Error) => ({
+  error: error.message,
+  type: `${EDIT}_${REJECTED}`,
+});
+export const editUser = ({ firstName, key, secondName, url }): Thunk => (dispatch) => {
+  try {
+    const user = {
+      firstName,
+      key,
+      secondName,
+      url, 
+    };
+    dispatch(editSuccess(user));
+  } catch (error) {
+    dispatch(editError(error));
+  }
+}
+
+// --------------------------------------------------
+
+// -- Zmiana wartości w inpucie w trakcie edycji - na wstępie wczytUje pełne dane --
+
+export const changeInputValueSuccess = (user) => ({
+  type: `${CHANGE_INPUT_VALUE}_${FULFILLED}`,
+  user
+})
+export const changeInputValueError = (error: Error) => ({
+  error: error.message,
+  type: `${CHANGE_INPUT_VALUE}_${REJECTED}`,
+});
+export const changeInputValueInEditing = ({name, value}): Thunk => (dispatch) => {
+  try {
+    const user = {
+      [name]: value
+    };
+    dispatch(changeInputValueSuccess(user));
+  } catch (error) {
+    dispatch(changeInputValueError(error));
+  }
+}
+
+// --------------------------------------------------------------------------------
+
+// --------- Aktualizacja danych użytkownika ---------
+
+export const updateSuccess = (users: FirebaseReducer['users']) => ({
+  type: `${UPDATE}_${FULFILLED}`,
+  users
+});
+
+export const updateError = (error: Error) => ({
+  error: error.message,
+  type: `${UPDATE}_${REJECTED}`
+});
+
+export const updateUserInFirebase = (user: AddUserToFirebase): Thunk =>
+  async (dispatch, getState, { base, storage }) => {
+    console.log(user);
+    const usersRef = base.ref('users');
+    const pictureRef = storage.ref('personalPicture');
+    try {
+      await pictureRef.child(user.key).delete().then(() => addUser(user, usersRef, pictureRef));
+      usersRef.on('value', (data) => {
+        if (data) {
+          dispatch(updateSuccess(data.val()))
+        }
+      });
+      dispatch(reset('List'));
+    } catch (error) {
+      dispatch(updateError(error));
+    };
+  };
+
+// ---------------------------------------------------
+
 // -------------------- Routing --------------------
 
-export const redirect = (url: string): ThunkAction<void, State, ExtraArgument, Action> => (dispatch) => {
+export const redirect = (url: string): Thunk => (dispatch) => {
   try {
     dispatch(push(url));
   } catch (error) {
@@ -130,8 +276,97 @@ export const redirect = (url: string): ThunkAction<void, State, ExtraArgument, A
 
 // -------------------------------------------------
 
+// --- Podświetlenie wybranego elementu w tabeli ---
+
+export const detailsSuccess = (isEdited: string) => ({
+  isEdited,
+  type: `${DETAILS}_${FULFILLED}`
+});
+
+export const detailsError = (error: Error) => ({
+  error: error.message,
+  type: `${DETAILS}_${REJECTED}`
+});
+
+export const highligthChosenElement = (key: string): Thunk => (dispatch) => {
+  try{    
+    dispatch(detailsSuccess(key))
+  } catch (error){
+    dispatch(detailsError(error))
+  }
+}
+
+// -------------------------------------------------
+
+// --- Podświetlenie elementu na czerwono po wejściu na ikonę usunięcia ---
+
+export const onDeleteHoverSuccess = (toDelete) => ({
+  toDelete,
+  type: `${DELETE_HOVER}_${FULFILLED}`
+});
+
+export const onDeleteHoverError = (error: Error) => ({
+  error: error.message,
+  type: `${DELETE_HOVER}_${REJECTED}`
+});
+
+export const onDeleteHoverHighlight = (type, key: string): Thunk => (dispatch) => {
+  try{
+    type === 'mouseenter'? dispatch(onDeleteHoverSuccess(key)) : dispatch(onDeleteHoverSuccess(""));
+  } catch (error){
+    dispatch(onDeleteHoverError(error))
+  }
+}
+
+// ------------------------------------------------------------------------ 
+
+// --- Zmiana klucza w InputFile w celu resetu po wysłAniu formularza ---
+
+export const onChangeKeySuccess = (inputFileKey) => ({
+  inputFileKey,
+  type: `${CHANGE_KEY}_${FULFILLED}`
+});
+
+export const onChangeKeyError = (error: Error) => ({
+  error: error.message,
+  type: `${CHANGE_KEY}_${REJECTED}`
+});
+
+export const onChangeKeyInputFile = () => (dispatch) => {
+  try{
+    dispatch(onChangeKeySuccess(Date.now().toString()));
+  } catch (error){
+    dispatch(onDeleteHoverError(error))
+  }
+}
+
+// ----------------------------------------------------------------------
+
+// ----- Podświetlenie elementu na niebesko po wejściu na ikonę edycji -----
+
+export const onEditHoverSuccess = (toEdit) => ({
+  toEdit,
+  type: `${EDIT_HOVER}_${FULFILLED}`
+});
+
+export const onEditHoverError = (error: Error) => ({
+  error: error.message,
+  type: `${EDIT_HOVER}_${REJECTED}`
+});
+
+export const onEditHoverHighlight = (type, key: string): Thunk => (dispatch) => {
+  try{
+    type === 'mouseenter'? dispatch(onEditHoverSuccess(key)) : dispatch(onEditHoverSuccess(""));
+  } catch (error){
+    dispatch(onDeleteHoverError(error))
+  }
+}
+
+// -------------------------------------------------------------------------
+
+
 const firebaseReducer = typeToReducer({
-  [ADD]: {
+  [CREATE]: {
     FULFILLED: (state: FirebaseReducer, { users }: FirebaseReducer) => ({
       ...state,
       isError: false,
@@ -150,7 +385,7 @@ const firebaseReducer = typeToReducer({
       isUploading: false
     }),
   },
-  [GET]: {
+  [RETRIEVE]: {
     FULFILLED: (state: FirebaseReducer, { users }: FirebaseReducer) => ({
       ...state,
       isError: false,
@@ -169,6 +404,95 @@ const firebaseReducer = typeToReducer({
       isLoading: false
     }),
   },
+  [EDIT]: {
+    FULFILLED: (state: FirebaseReducer, { user }) => ({
+      ...state,
+      isError: false,
+      user
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+    })
+  },
+  [DELETE]: {
+    FULFILLED: (state: FirebaseReducer, { users }: FirebaseReducer) => ({
+      ...state,
+      isError: false,
+      users
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+    }),
+  },
+  [UPDATE]: {
+    FULFILLED: (state: FirebaseReducer, { users }: FirebaseReducer) => ({
+      ...state,
+      isError: false,
+      isUploading: false,
+      users
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+      isUploading: false
+    }),
+  },
+  [DETAILS]: {
+    FULFILLED: (state: FirebaseReducer, { isEdited }: FirebaseReducer) => ({
+      ...state,
+      isEdited,
+      isError: false,
+      isUploading: false,
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+      isUploading: false
+    }),
+  },
+  [DELETE_HOVER]: {
+    FULFILLED: (state: FirebaseReducer, { toDelete }: FirebaseReducer) => ({
+      ...state,
+      isError: false,
+      toDelete
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+    }),
+  },
+  [EDIT_HOVER]: {
+    FULFILLED: (state: FirebaseReducer, { toEdit }: FirebaseReducer) => ({
+      ...state,
+      isError: false,
+      toEdit
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+    }),
+  },
+  [CHANGE_KEY]: {
+    FULFILLED: (state: FirebaseReducer, { inputFileKey }: FirebaseReducer) => ({
+      ...state,
+      inputFileKey,
+      isError: false
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+    }),
+  }
+  // ['@@router/LOCATION_CHANGE']: () => 
 }, baseInitialState);
 
 export default (history: History) => combineReducers({

@@ -1,9 +1,10 @@
 import { connect } from 'react-redux';
-import { addUserToFirebase } from '../../module';
+import { addUserToFirebase, onChangeKeyInputFile } from '../../module';
 import AddUserForm from './AddUserForm';
 
 const mapDispatchToProps = {
-    addUserToFirebase
+    addUserToFirebase,
+    onChangeKeyInputFile
 };
 
 export default connect(null, mapDispatchToProps)(AddUserForm);

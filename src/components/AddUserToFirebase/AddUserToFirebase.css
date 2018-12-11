@@ -1,11 +1,10 @@
 tbody tr:hover {
-  background-color: 	#4fff5b;
-  opacity: 0.5;
+  background-color: 	#f0f0f5;
   cursor: pointer;
-  transition: 0.9s;
+  transition: 1.2s;
 }
 tbody tr {
-  transition: 0.9s;
+  transition: 1.2s;
 }
 table td {
   font-size: 1.0rem;
@@ -14,4 +13,11 @@ table td {
   table td {
     font-size: 0.7rem;
   }
+}
+.isActive {
+  background-color:#f0f0f5;
+  opacity: 0.6;
+}
+onDelete:hover{
+  background-color: crimson;
 }
