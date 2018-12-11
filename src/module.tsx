@@ -46,7 +46,7 @@ const DETAILS = 'DETAILS';
 const DELETE_HOVER = 'DELETE_HOVER';
 const EDIT_HOVER = 'EDIT_HOVER';
 const CHANGE_KEY = 'CHANGE_KEY';
-const CHANGE_INPUT_VALUE = 'CHANGE_INPUT_VALUE';
+// const CHANGE_INPUT_VALUE = 'CHANGE_INPUT_VALUE';
 
 // ---------------------------------------------------
 
@@ -199,7 +199,7 @@ export const editUser = ({ firstName, key, secondName, url }): Thunk => (dispatc
       firstName,
       key,
       secondName,
-      url, 
+      url,
     };
     dispatch(editSuccess(user));
   } catch (error) {
@@ -209,25 +209,34 @@ export const editUser = ({ firstName, key, secondName, url }): Thunk => (dispatc
 
 // --------------------------------------------------
 
-// -- Zmiana wartości w inpucie w trakcie edycji - na wstępie wczytUje pełne dane --
+// -- Zmiana wartości w inpucie w trakcie edycji - na wstępie wczytuje pełne dane --
 
-export const changeInputValueSuccess = (user) => ({
-  type: `${CHANGE_INPUT_VALUE}_${FULFILLED}`,
-  user
-})
+/*export const changeInputValueSuccess = () => {
+  // console.log(user);
+  
+  return {
+    type: `${CHANGE_INPUT_VALUE}_${FULFILLED}`,
+    // user
+  };
+
+}
 export const changeInputValueError = (error: Error) => ({
   error: error.message,
   type: `${CHANGE_INPUT_VALUE}_${REJECTED}`,
-});
-export const changeInputValueInEditing = ({name, value}): Thunk => (dispatch) => {
-  try {
+});*/
+export const changeInputValueInEditing = ({ name, value }) =>  {
+  console.log(name, value);
+  
+  /*try {
+    console.log(name, value);
+    
     const user = {
       [name]: value
     };
-    dispatch(changeInputValueSuccess(user));
+    dispatch(changeInputValueSuccess());
   } catch (error) {
     dispatch(changeInputValueError(error));
-  }
+  }*/
 }
 
 // --------------------------------------------------------------------------------
@@ -289,9 +298,9 @@ export const detailsError = (error: Error) => ({
 });
 
 export const highligthChosenElement = (key: string): Thunk => (dispatch) => {
-  try{    
+  try {
     dispatch(detailsSuccess(key))
-  } catch (error){
+  } catch (error) {
     dispatch(detailsError(error))
   }
 }
@@ -311,16 +320,16 @@ export const onDeleteHoverError = (error: Error) => ({
 });
 
 export const onDeleteHoverHighlight = (type, key: string): Thunk => (dispatch) => {
-  try{
-    type === 'mouseenter'? dispatch(onDeleteHoverSuccess(key)) : dispatch(onDeleteHoverSuccess(""));
-  } catch (error){
+  try {
+    type === 'mouseenter' ? dispatch(onDeleteHoverSuccess(key)) : dispatch(onDeleteHoverSuccess(""));
+  } catch (error) {
     dispatch(onDeleteHoverError(error))
   }
 }
 
 // ------------------------------------------------------------------------ 
 
-// --- Zmiana klucza w InputFile w celu resetu po wysłAniu formularza ---
+// --- Zmiana klucza w InputFile w celu resetu po wysłaniu formularza ---
 
 export const onChangeKeySuccess = (inputFileKey) => ({
   inputFileKey,
@@ -333,9 +342,9 @@ export const onChangeKeyError = (error: Error) => ({
 });
 
 export const onChangeKeyInputFile = () => (dispatch) => {
-  try{
+  try {
     dispatch(onChangeKeySuccess(Date.now().toString()));
-  } catch (error){
+  } catch (error) {
     dispatch(onDeleteHoverError(error))
   }
 }
@@ -355,9 +364,9 @@ export const onEditHoverError = (error: Error) => ({
 });
 
 export const onEditHoverHighlight = (type, key: string): Thunk => (dispatch) => {
-  try{
-    type === 'mouseenter'? dispatch(onEditHoverSuccess(key)) : dispatch(onEditHoverSuccess(""));
-  } catch (error){
+  try {
+    type === 'mouseenter' ? dispatch(onEditHoverSuccess(key)) : dispatch(onEditHoverSuccess(""));
+  } catch (error) {
     dispatch(onDeleteHoverError(error))
   }
 }

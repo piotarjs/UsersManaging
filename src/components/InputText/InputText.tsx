@@ -8,11 +8,12 @@ interface Props {
     secondName: string,
     url: string
   }
+  changeInputValueInEditing
 };
 
-const InputText: React.FunctionComponent<Props & WrappedFieldProps> = ({input, user}) =>
+const InputText: React.FunctionComponent<Props & WrappedFieldProps> = ({changeInputValueInEditing, input, user}) =>
   <div>
-    <input type="text" {...input} required={true} className="form-control mb-2" onChange={({target}) => console.log(target.value)} value={user.key}/>
+    <input type="text" {...input} required={true} className="form-control mb-2" onChange={({target}) => changeInputValueInEditing(target)} value={user.key}/>
   </div>
 
 
