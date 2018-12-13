@@ -11,11 +11,9 @@ interface Props {
   changeInputValueInEditing
 };
 
-const InputText: React.FunctionComponent<Props & WrappedFieldProps> = ({changeInputValueInEditing, input, user}) =>
+const InputText: React.FunctionComponent<Props & WrappedFieldProps> = ({ input }) =>
   <div>
-    <input type="text" {...input} required={true} className="form-control mb-2" onChange={({target}) => changeInputValueInEditing(target)} value={user.key}/>
+    <input type="text" {...input} className="form-control mb-2" />
   </div>
-
-
 
 export default InputText;

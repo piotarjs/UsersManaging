@@ -12,6 +12,7 @@ import './AddUserToFirebase.css';
 import './AddUserToFirebase.scss';
 
 interface Props {
+  user,
   users: UsersList['users'],
   match: Match<{key: string, action: string}>,
   isError: boolean,
@@ -23,6 +24,12 @@ interface Props {
 class AddUserToFirebase extends React.Component<Props> {
   public componentDidMount() {
     this.props.getUserFromFirebase();
+  }
+  public componentDidUpdate() {
+    const { editUser, match, users } = this.props;
+    if(match.params.key){
+      editUser(users[match.params.key]);
+    }
   }
   public render() {
     const { users, isLoading, isError, match } = this.props;
@@ -39,8 +46,8 @@ class AddUserToFirebase extends React.Component<Props> {
               <CardBody>
                 {match.params.key
                   ? match.params.action && match.params.action === 'edit'
-                    ? <EditUser user={users[match.params.key]}/>
-                    : <About user={users[match.params.key]}/> 
+                    ? <EditUser/>
+                    : <About/> 
                   : <AddUserForm />
                 }
               </CardBody>

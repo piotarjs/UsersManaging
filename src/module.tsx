@@ -18,6 +18,7 @@ export interface State {
     isUploading: false,
     toDelete: string,
     toEdit: string,
+    user: any,
     users: UsersList['users']
   }
 };
@@ -46,7 +47,6 @@ const DETAILS = 'DETAILS';
 const DELETE_HOVER = 'DELETE_HOVER';
 const EDIT_HOVER = 'EDIT_HOVER';
 const CHANGE_KEY = 'CHANGE_KEY';
-// const CHANGE_INPUT_VALUE = 'CHANGE_INPUT_VALUE';
 
 // ---------------------------------------------------
 
@@ -208,38 +208,6 @@ export const editUser = ({ firstName, key, secondName, url }): Thunk => (dispatc
 }
 
 // --------------------------------------------------
-
-// -- Zmiana wartości w inpucie w trakcie edycji - na wstępie wczytuje pełne dane --
-
-/*export const changeInputValueSuccess = () => {
-  // console.log(user);
-  
-  return {
-    type: `${CHANGE_INPUT_VALUE}_${FULFILLED}`,
-    // user
-  };
-
-}
-export const changeInputValueError = (error: Error) => ({
-  error: error.message,
-  type: `${CHANGE_INPUT_VALUE}_${REJECTED}`,
-});*/
-export const changeInputValueInEditing = ({ name, value }) =>  {
-  console.log(name, value);
-  
-  /*try {
-    console.log(name, value);
-    
-    const user = {
-      [name]: value
-    };
-    dispatch(changeInputValueSuccess());
-  } catch (error) {
-    dispatch(changeInputValueError(error));
-  }*/
-}
-
-// --------------------------------------------------------------------------------
 
 // --------- Aktualizacja danych użytkownika ---------
 

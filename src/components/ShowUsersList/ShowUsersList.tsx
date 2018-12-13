@@ -51,7 +51,7 @@ const ShowUsersList: React.FunctionComponent<Props> = ({ deleteUserFromFirebase,
           </TableHead>
           <TableBody>
             {Object.values(users).map(({ firstName, secondName, url, key }) =>
-              <tr key={key} onClick={() => onDetails(key)} className={isActive(key)}>
+              <tr key={key} onClick={() => onDetails(key)} className={isActive(key)} title="Wyświetl szczegóły o użytkowniku">
                 <td>{firstName}</td>
                 <td>{secondName}</td>
                 <td>

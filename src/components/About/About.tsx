@@ -23,7 +23,7 @@ const About: React.FunctionComponent<Props> = ({ user: { firstName, secondName, 
   const onHighlightBack = () => {
     highligthChosenElement();
     redirect('/');
-  }  
+  } 
   return (
     <Container>
       <Row className="justify-content-center">
