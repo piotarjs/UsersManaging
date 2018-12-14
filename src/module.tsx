@@ -212,6 +212,7 @@ export const editUser = ({ firstName, key, secondName, url }): Thunk => (dispatc
 // --------- Aktualizacja danych użytkownika ---------
 
 export const updateSuccess = (users: FirebaseReducer['users']) => ({
+  isEdited: undefined,
   type: `${UPDATE}_${FULFILLED}`,
   users
 });
@@ -223,7 +224,6 @@ export const updateError = (error: Error) => ({
 
 export const updateUserInFirebase = (user: AddUserToFirebase): Thunk =>
   async (dispatch, getState, { base, storage }) => {
-    console.log(user);
     const usersRef = base.ref('users');
     const pictureRef = storage.ref('personalPicture');
     try {
@@ -234,6 +234,7 @@ export const updateUserInFirebase = (user: AddUserToFirebase): Thunk =>
         }
       });
       dispatch(reset('List'));
+      dispatch(push('/'));
     } catch (error) {
       dispatch(updateError(error));
     };
@@ -406,8 +407,9 @@ const firebaseReducer = typeToReducer({
     }),
   },
   [UPDATE]: {
-    FULFILLED: (state: FirebaseReducer, { users }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { isEdited, users }: FirebaseReducer) => ({
       ...state,
+      isEdited,
       isError: false,
       isUploading: false,
       users

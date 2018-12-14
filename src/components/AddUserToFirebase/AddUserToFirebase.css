@@ -21,3 +21,7 @@ table td {
 onDelete:hover{
   background-color: crimson;
 }
+
+.errorText {
+  font-size: 0.6rem
+}

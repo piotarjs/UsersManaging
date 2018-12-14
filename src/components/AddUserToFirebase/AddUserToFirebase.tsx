@@ -37,11 +37,13 @@ class AddUserToFirebase extends React.Component<Props> {
       <Container>
         <Row className="mt-4">
           <Col lg="8">
-            {isLoading && <Row className="justify-content-center mt-5"><Loader type="ball-clip-rotate-multiple" active={true} /></Row>}
-            {isError && <p>Wystąpił błąd podczas pobierania danych!!!</p>}
-            {users != null? <ShowUsersList /> : <h2>Brak listy do wyświetlenia</h2>}
+            {
+              isLoading? <Row className="justify-content-center mt-5"><Loader type="ball-clip-rotate-multiple" active={true} /></Row> :
+                isError? <p>Wystąpił błąd podczas pobierania danych!!!</p> :
+                  users != null? <ShowUsersList /> : <h2>Brak listy do wyświetlenia</h2>
+            }
           </Col>
-          <Col lg="4">
+          <Col lg="4" className="mt-3 mt-lg-0">
             <Card>
               <CardBody>
                 {match.params.key

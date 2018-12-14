@@ -3,23 +3,26 @@ import * as React from 'react';
 import { Action, ActionCreator } from 'redux';
 import { Field, InjectedFormProps, reduxForm } from 'redux-form';
 import { Redirect } from '../../interfaces';
+import {validate} from '../../validate';
+import InputText from '../InputText';
 import UploadFile from '../UploadFile';
 
 interface Props {
-  user: {
+  validate:{
     firstName: string,
-    key: string,
     secondName: string,
-    url: string
-  },
+    uploadFile: string
+  }
   redirect: Redirect['redirect'],
   updateUserInFirebase: ActionCreator<Action>,
   editUser: ActionCreator<Action>,
   highligthChosenElement: ActionCreator<Action>
 };
 
+
+
 const EditUser: React.FunctionComponent<Props & InjectedFormProps > = 
-({ handleSubmit, highligthChosenElement, redirect, updateUserInFirebase, user }) => {
+({ handleSubmit, highligthChosenElement, invalid, pristine, redirect, submitting, updateUserInFirebase }) => {
   const onHighlightBack =() => {
     highligthChosenElement();
     redirect('/');
@@ -29,16 +32,18 @@ const EditUser: React.FunctionComponent<Props & InjectedFormProps > =
       <p className="h4 text-center py-4">Zmień dane użytkownika</p>
       <form onSubmit={handleSubmit(updateUserInFirebase)} className="md-form">
         <div>
-          <Field name="firstName" component='input' className="form-control mb-2" type="text" placeholder="Imię" />
+          <Field name="firstName" component={InputText} />
         </div>
         <div>
-          <Field name="secondName" component='input' className="form-control mb-2" type="text" placeholder="Nazwisko" />
+          <Field name="secondName" component={InputText} />
         </div>
         <div>
           <Field name="uploadFile" component={UploadFile} />
         </div>
-        <MDBBtn color="dark" size="sm" type="submit" onClick={onHighlightBack}>Powrót</MDBBtn>
-        <MDBBtn color="success" size="sm" type="submit">Zapisz</MDBBtn>
+        <div className="mt-3">
+          <MDBBtn color="dark" size="sm" type="submit" onClick={onHighlightBack}>Powrót</MDBBtn>
+          <MDBBtn color="success" size="sm" type="submit" disabled={invalid || pristine || submitting}>Zapisz</MDBBtn>
+        </div>
       </form>
     </div>
   )
@@ -47,4 +52,5 @@ const EditUser: React.FunctionComponent<Props & InjectedFormProps > =
 export default reduxForm({
   enableReinitialize: true,
   form: 'Edit',
+  validate
 })(EditUser);
