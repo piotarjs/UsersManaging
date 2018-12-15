@@ -2,7 +2,7 @@ import { MDBBtn } from "mdbreact";
 import * as React from 'react';
 import { Action, ActionCreator } from 'redux';
 import { Field, InjectedFormProps, reduxForm } from 'redux-form';
-import {validate} from '../../validate';
+import { validate } from '../../validate';
 import InputText from '../InputText';
 import UploadFile from '../UploadFile';
 
@@ -11,7 +11,8 @@ interface Props {
   onChangeKeyInputFile: ActionCreator<Action>
 }
 
-const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = ({ handleSubmit, addUserToFirebase, onChangeKeyInputFile, pristine, submitting, invalid }) => {
+const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = 
+({ handleSubmit, addUserToFirebase, onChangeKeyInputFile, pristine, submitting, invalid }) => {
   return(
     <div>
       <p className="h4 text-center py-4">Wpisz dane użytkownika</p>

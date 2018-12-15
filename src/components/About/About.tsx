@@ -1,25 +1,17 @@
 import { MDBBtn } from "mdbreact";
 import { Container, Row } from 'mdbreact';
 import * as React from 'react';
-import { Redirect } from '../../interfaces';
+import { Action, ActionCreator } from 'redux';
+import { UserDetails } from '../../interfaces';
 
 interface Props {
-  user: {
-    firstName: string,
-    key: string,
-    secondName: string,
-    url: string
-  },
-  redirect: Redirect['redirect'],
-  deleteUserFromFirebase, 
-  highligthChosenElement
+  user: UserDetails['user'],
+  redirect: ActionCreator<Action>,
+  deleteUserFromFirebase: ActionCreator<Action>, 
+  highligthChosenElement: ActionCreator<Action>
 };
 
 const About: React.FunctionComponent<Props> = ({ user: { firstName, secondName, url, key }, redirect, deleteUserFromFirebase, highligthChosenElement }) => {
-  const deleteUser =() =>{
-    deleteUserFromFirebase(key);
-    redirect('/')
-  }
   const onHighlightBack = () => {
     highligthChosenElement();
     redirect('/');
@@ -28,9 +20,9 @@ const About: React.FunctionComponent<Props> = ({ user: { firstName, secondName, 
     <Container>
       <Row className="justify-content-center">
         <MDBBtn color="dark" size="sm" type="submit" onClick={onHighlightBack}>Powrót</MDBBtn>
-        <MDBBtn color="danger" size="sm" type="submit" onClick={deleteUser}>Usuń</MDBBtn>
+        <MDBBtn color="danger" size="sm" type="submit" onClick={() => deleteUserFromFirebase(key)}>Usuń</MDBBtn>
       </Row>
-      {(firstName || secondName || url) &&
+      {(firstName && secondName && url) &&
         <Row className="py-4 justify-content-center">
           <img
             src={url}

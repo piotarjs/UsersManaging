@@ -1,10 +1,13 @@
-export const validate = (value) => {
-    const {firstName, secondName, uploadFile} = value;
-    const errors = {
-      firstName: '',
-      secondName: '',
-      uploadFile: ''
-    };
+import { FormErrors } from 'redux-form';
+
+interface FormData{
+  firstName?: string,
+  secondName?: string,
+  uploadFile?: string
+}
+
+export const validate = ({ firstName, secondName, uploadFile }: FormData): FormErrors<FormData> => {
+    const errors: FormErrors<FormData> = {};
     !firstName? errors.firstName = 'Podaj imię!' : 
       firstName.length < 3? errors.firstName = 'Imię musi składać z co najmniej 3 liter' : errors.firstName = '';
     

@@ -1,25 +1,27 @@
 import { Card, CardBody, Col, Fa, Row, Table, TableBody, TableHead } from 'mdbreact';
 import * as React from 'react';
-import { Redirect, UsersList } from '../../interfaces';
+import { Action, ActionCreator } from 'redux';
+import { UsersList } from '../../interfaces';
 
 interface Props {
   isEdited: string,
   toDelete: string,
   toEdit: string,
   users: UsersList['users'],
-  redirect: Redirect['redirect'],
-  deleteUserFromFirebase,
-  highligthChosenElement,
-  onDeleteHoverHighlight,
-  onEditHoverHighlight
+  redirect: ActionCreator<Action>,
+  deleteUserFromFirebase: ActionCreator<Action>,
+  highligthChosenElement: ActionCreator<Action>,
+  onDeleteHoverHighlight:ActionCreator<Action>,
+  onEditHoverHighlight: ActionCreator<Action>
 };
 
-const ShowUsersList: React.FunctionComponent<Props> = ({ deleteUserFromFirebase, highligthChosenElement, isEdited, onDeleteHoverHighlight, onEditHoverHighlight, redirect, toDelete, toEdit, users }) => {
-  const onDelete = (e, key) => {
+const ShowUsersList: React.FunctionComponent<Props> = 
+({ deleteUserFromFirebase, highligthChosenElement, isEdited, onDeleteHoverHighlight, onEditHoverHighlight, redirect, toDelete, toEdit, users }) => {
+  const onDelete = (e: Event, key: string) => {
     e.stopPropagation();
     deleteUserFromFirebase(`${key}`)
   }
-  const onEdit = (e, key: string) => {
+  const onEdit = (e: Event, key: string) => {
     const action = 'edit';
     e.stopPropagation();
     highligthChosenElement(key);
@@ -30,7 +32,7 @@ const ShowUsersList: React.FunctionComponent<Props> = ({ deleteUserFromFirebase,
     redirect(`/${key}`);
   }
   const classNames = require('classnames');
-  const isActive = (key) => classNames({
+  const isActive = (key: string) => classNames({
     "bg-danger": toDelete === key,
     "bg-info": toEdit === key,
     "disabled": isEdited === key,
@@ -69,9 +71,9 @@ const ShowUsersList: React.FunctionComponent<Props> = ({ deleteUserFromFirebase,
                       size="lg" 
                       title="Usuń" 
                       type="submit" 
-                      onClick={(e) => onDelete(e, key)} 
-                      onMouseEnter={({type}) => onDeleteHoverHighlight(type, key)}
-                      onMouseLeave={({type}) => onDeleteHoverHighlight(type, key)}
+                      onClick={(e: Event) => onDelete(e, key)} 
+                      onMouseEnter={({type}: Event) => onDeleteHoverHighlight(type, key)}
+                      onMouseLeave={({type}: Event) => onDeleteHoverHighlight(type, key)}
                       className="mx-2 onDelete" 
                     />
                     <Fa 
@@ -80,9 +82,9 @@ const ShowUsersList: React.FunctionComponent<Props> = ({ deleteUserFromFirebase,
                       size="lg" 
                       title="Edytuj" 
                       type="submit" 
-                      onClick={(e) => onEdit(e, key)} 
-                      onMouseEnter={({type}) => onEditHoverHighlight(type, key)}
-                      onMouseLeave={({type}) => onEditHoverHighlight(type, key)}
+                      onClick={(e: Event) => onEdit(e, key)} 
+                      onMouseEnter={({type}: Event) => onEditHoverHighlight(type, key)}
+                      onMouseLeave={({type}: Event) => onEditHoverHighlight(type, key)}
                       className="mx-2"
                     />
                   </Row>

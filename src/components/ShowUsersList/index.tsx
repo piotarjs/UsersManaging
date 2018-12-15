@@ -1,6 +1,5 @@
-import { push } from 'connected-react-router';
 import { connect } from 'react-redux';
-import { deleteUserFromFirebase, highligthChosenElement, onDeleteHoverHighlight, onEditHoverHighlight, State } from '../../module';
+import { deleteUserFromFirebase, highligthChosenElement, onDeleteHoverHighlight, onEditHoverHighlight, redirect, State } from '../../module';
 import ShowUsersList from './ShowUsersList';
 
 
@@ -16,7 +15,7 @@ const mapDispatchToProps = {
     highligthChosenElement,
     onDeleteHoverHighlight,
     onEditHoverHighlight,
-    redirect: push
+    redirect
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShowUsersList);

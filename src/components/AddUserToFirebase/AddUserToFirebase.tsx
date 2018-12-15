@@ -3,7 +3,7 @@ import * as React from 'react';
 import Loader from 'react-loaders';
 import { match as Match } from 'react-router';
 import { Action, ActionCreator } from 'redux';
-import { UsersList } from '../../interfaces';
+import { UserDetails, UsersList } from '../../interfaces';
 import About from '../About';
 import AddUserForm from '../AddUserForm';
 import EditUser from '../EditUser';
@@ -12,7 +12,7 @@ import './AddUserToFirebase.css';
 import './AddUserToFirebase.scss';
 
 interface Props {
-  user,
+  user: UserDetails['user'],
   users: UsersList['users'],
   match: Match<{key: string, action: string}>,
   isError: boolean,
@@ -27,7 +27,7 @@ class AddUserToFirebase extends React.Component<Props> {
   }
   public componentDidUpdate() {
     const { editUser, match, users } = this.props;
-    if(match.params.key){
+    if(match.params.key && users){
       editUser(users[match.params.key]);
     }
   }

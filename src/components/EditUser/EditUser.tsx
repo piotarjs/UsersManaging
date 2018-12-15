@@ -2,24 +2,16 @@ import { MDBBtn } from "mdbreact";
 import * as React from 'react';
 import { Action, ActionCreator } from 'redux';
 import { Field, InjectedFormProps, reduxForm } from 'redux-form';
-import { Redirect } from '../../interfaces';
 import {validate} from '../../validate';
 import InputText from '../InputText';
 import UploadFile from '../UploadFile';
 
 interface Props {
-  validate:{
-    firstName: string,
-    secondName: string,
-    uploadFile: string
-  }
-  redirect: Redirect['redirect'],
+  redirect: ActionCreator<Action>,
   updateUserInFirebase: ActionCreator<Action>,
   editUser: ActionCreator<Action>,
   highligthChosenElement: ActionCreator<Action>
 };
-
-
 
 const EditUser: React.FunctionComponent<Props & InjectedFormProps > = 
 ({ handleSubmit, highligthChosenElement, invalid, pristine, redirect, submitting, updateUserInFirebase }) => {

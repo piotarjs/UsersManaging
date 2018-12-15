@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
-// import { State } from '../../module';
+import { State } from '../../module';
 import changeInputValueInEditing from '../../module';
 
 import InputText from './InputText'
 
 
-const mapStateToProps = ({ firebase: { user } }) => ({
+const mapStateToProps = ({ firebase: { user } }: State) => ({
     user
 });
 const mapDispatchToProps = {

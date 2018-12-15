@@ -1,5 +1,3 @@
-import { Action, ActionCreator } from 'redux';
-
 export interface UsersList{
     users: {
         [key: string]: {
@@ -11,8 +9,13 @@ export interface UsersList{
     }
 }
 
-export interface Redirect{
-    redirect: ActionCreator<Action>
+export interface UserDetails{
+    user: {
+        firstName: string,
+    key: string,
+    secondName: string,
+    url: string
+    }
 }
 
 export interface ExtraArgument { base: firebase.database.Database, storage: firebase.storage.Storage }
