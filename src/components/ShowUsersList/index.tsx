@@ -3,11 +3,11 @@ import { deleteUserFromFirebase, highligthChosenElement, onDeleteHoverHighlight,
 import ShowUsersList from './ShowUsersList';
 
 
-const mapStateToProps = ({ firebase: {  isEdited, toDelete, toEdit, users } }: State) => ({
+const mapStateToProps = ({ firebase: {  isEdited, toDelete, toEdit, usersFiltered } }: State) => ({
     isEdited,
     toDelete,
     toEdit,
-    users
+    usersFiltered
 });
 
 const mapDispatchToProps = {

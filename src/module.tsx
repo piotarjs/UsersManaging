@@ -19,7 +19,8 @@ export interface State {
     toDelete: string,
     toEdit: string,
     user: UserDetails['user'],
-    users: UsersList['users']
+    users: UsersList['users'],
+    usersFiltered: UsersList['users']
   }
 };
 
@@ -45,6 +46,7 @@ const DETAILS = 'DETAILS';
 const DELETE_HOVER = 'DELETE_HOVER';
 const EDIT_HOVER = 'EDIT_HOVER';
 const CHANGE_KEY = 'CHANGE_KEY';
+const FILTER = 'FILTER'
 
 // ---------------------------------------------------
 
@@ -60,6 +62,7 @@ const baseInitialState = {
   toEdit: '',
   user: {},
   users: {},
+  usersFiltered: {}
 };
 
 // ----------------------------------------------------
@@ -96,7 +99,8 @@ export const addPending = () => ({
 
 export const addSuccess = (users: FirebaseReducer['users']) => ({
   type: `${CREATE}_${FULFILLED}`,
-  users
+  users,
+  usersFiltered: users
 });
 
 export const addError = (error: Error) => ({
@@ -128,7 +132,8 @@ export const addUserToFirebase = (user: AddUserToFirebase): Thunk =>
 
 export const deleteSuccess = (users: FirebaseReducer['users']) => ({
   type: `${DELETE}_${FULFILLED}`,
-  users
+  users,
+  usersFiltered: users
 });
 
 export const deleteError = (error: Error) => ({
@@ -141,6 +146,7 @@ export const deleteUserFromFirebase = (key: string): Thunk =>
     const usersRef = base.ref('users');
     const pictureRef = storage.ref('personalPicture');
     try {
+      dispatch(push('/'));
       usersRef.child(`${key}`).remove().then(
         () => pictureRef.child(`${key}`).delete().then(
           () => usersRef.on('value', (data) => {
@@ -148,7 +154,7 @@ export const deleteUserFromFirebase = (key: string): Thunk =>
               dispatch(deleteSuccess(data.val()))
             }
           })
-        ).then(() => dispatch(push('/')))
+        )
       );
     } catch (error) {
       dispatch(deleteError(error));
@@ -165,7 +171,8 @@ export const getPending = () => ({
 
 export const getSuccess = (users: FirebaseReducer['users']) => ({
   type: `${RETRIEVE}_${FULFILLED}`,
-  users
+  users,
+  usersFiltered: users
 });
 
 export const getError = (error: Error) => ({
@@ -180,6 +187,36 @@ export const getUserFromFirebase = (): Thunk => async (dispatch, getState, { bas
     dispatch(getSuccess(users.val()));
   } catch (error) {
     dispatch(getError(error));
+  };
+};
+
+// --------------------------------------------------
+
+// --------- Filtrowanie listy użytkowników ---------
+
+export const filterPending = () => ({
+  type: `${FILTER}_${PENDING}`
+});
+
+export const filterSuccess = (usersFiltered: FirebaseReducer['users']) => ({
+  type: `${FILTER}_${FULFILLED}`,
+  usersFiltered
+});
+
+export const filterError = (error: Error) => ({
+  error: error.message,
+  type: `${FILTER}_${REJECTED}`,
+});
+
+export const filterUsersList = (usersList: FirebaseReducer['users'], phrase: string): Thunk => async (dispatch) => {
+  dispatch(filterPending());
+  try {
+    const filteredList = Object.values(usersList).filter(({firstName}) => firstName.includes(phrase));
+    const usersFiltered = {};
+    filteredList.forEach(({ firstName, key, secondName, url }) => usersFiltered[key] = { firstName, key, secondName, url });
+    dispatch(filterSuccess(usersFiltered));
+  } catch (error) {
+    dispatch(filterError(error));
   };
 };
 
@@ -216,7 +253,8 @@ export const editUser = ({ firstName, key, secondName, url }: UserDetails['user'
 export const updateSuccess = (users: FirebaseReducer['users']) => ({
   isEdited: '',
   type: `${UPDATE}_${FULFILLED}`,
-  users
+  users,
+  usersFiltered: users
 });
 
 export const updateError = (error: Error) => ({
@@ -351,7 +389,8 @@ const firebaseReducer = typeToReducer({
       ...state,
       isError: false,
       isUploading: false,
-      users
+      users,
+      usersFiltered: users
     }),
     PENDING: (state: FirebaseReducer) => ({
       ...state,
@@ -370,7 +409,8 @@ const firebaseReducer = typeToReducer({
       ...state,
       isError: false,
       isLoading: false,
-      users
+      users,
+      usersFiltered: users
     }),
     PENDING: (state: FirebaseReducer) => ({
       ...state,
@@ -400,7 +440,8 @@ const firebaseReducer = typeToReducer({
     FULFILLED: (state: FirebaseReducer, { users }: FirebaseReducer) => ({
       ...state,
       isError: false,
-      users
+      users,
+      usersFiltered: users
     }),
     REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
       ...state,
@@ -414,7 +455,8 @@ const firebaseReducer = typeToReducer({
       isEdited,
       isError: false,
       isUploading: false,
-      users
+      users,
+      usersFiltered: users
     }),
     REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
       ...state,
@@ -472,7 +514,26 @@ const firebaseReducer = typeToReducer({
       error,
       isError: true,
     }),
-  }
+  },
+  [FILTER]: {
+    FULFILLED: (state: FirebaseReducer, { usersFiltered }: FirebaseReducer) => ({
+      ...state,
+      isError: false,
+      isLoading: false,
+      usersFiltered
+    }),
+    PENDING: (state: FirebaseReducer) => ({
+      ...state,
+      isError: false,
+      isLoading: true
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+      isLoading: false
+    }),
+  },
   // ['@@router/LOCATION_CHANGE']: () => 
 }, baseInitialState);
 

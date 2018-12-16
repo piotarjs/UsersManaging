@@ -14,13 +14,15 @@ import './AddUserToFirebase.scss';
 interface Props {
   user: UserDetails['user'],
   users: UsersList['users'],
+  usersFiltered: UsersList['users'],
   match: Match<{key: string, action: string}>,
   isError: boolean,
   isLoading: boolean,
   editUser: ActionCreator<Action>,
+  filterUsersList: ActionCreator<Action>,
   getUserFromFirebase: ActionCreator<Action>
 }
-
+  
 class AddUserToFirebase extends React.Component<Props> {
   public componentDidMount() {
     this.props.getUserFromFirebase();
@@ -32,15 +34,19 @@ class AddUserToFirebase extends React.Component<Props> {
     }
   }
   public render() {
-    const { users, isLoading, isError, match } = this.props;
+    const { users, usersFiltered, isLoading, isError, match, filterUsersList } = this.props;
     return (
       <Container>
         <Row className="mt-4">
           <Col lg="8">
+            <input name="filerList" type="text" className="form-control mb-2" placeholder="Wpisz poszukiwanego użytkownika" onChange={({target}) => filterUsersList(users, target.value)} />
             {
               isLoading? <Row className="justify-content-center mt-5"><Loader type="ball-clip-rotate-multiple" active={true} /></Row> :
                 isError? <p>Wystąpił błąd podczas pobierania danych!!!</p> :
-                  users != null? <ShowUsersList /> : <h2>Brak listy do wyświetlenia</h2>
+                  usersFiltered !== null
+                    ? Object.values(usersFiltered).length > 0
+                      ? <ShowUsersList /> : <h2>Brak listy do wyświetlenia</h2>
+                    : <h2>Brak listy do wyświetlenia</h2>
             }
           </Col>
           <Col lg="4" className="mt-3 mt-lg-0">

@@ -1,16 +1,18 @@
 import { connect } from 'react-redux';
-import { editUser, getUserFromFirebase, State } from '../../module';
+import { editUser,filterUsersList, getUserFromFirebase, State } from '../../module';
 import AddUserToFirebase from './AddUserToFirebase';
 
 
-const mapStateToProps = ({ firebase: { isError, isLoading, users } }: State) => ({
+const mapStateToProps = ({ firebase: { isError, isLoading, users, usersFiltered } }: State) => ({
     isError,
     isLoading,
-    users
+    users,
+    usersFiltered
 });
 
 const mapDispatchToProps = {
     editUser,
+    filterUsersList,
     getUserFromFirebase,
 };
 

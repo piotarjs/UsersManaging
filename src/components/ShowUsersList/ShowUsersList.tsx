@@ -7,7 +7,7 @@ interface Props {
   isEdited: string,
   toDelete: string,
   toEdit: string,
-  users: UsersList['users'],
+  usersFiltered: UsersList['users'],
   redirect: ActionCreator<Action>,
   deleteUserFromFirebase: ActionCreator<Action>,
   highligthChosenElement: ActionCreator<Action>,
@@ -16,7 +16,7 @@ interface Props {
 };
 
 const ShowUsersList: React.FunctionComponent<Props> = 
-({ deleteUserFromFirebase, highligthChosenElement, isEdited, onDeleteHoverHighlight, onEditHoverHighlight, redirect, toDelete, toEdit, users }) => {
+({ deleteUserFromFirebase, highligthChosenElement, isEdited, onDeleteHoverHighlight, onEditHoverHighlight, redirect, toDelete, toEdit, usersFiltered }) => {
   const onDelete = (e: Event, key: string) => {
     e.stopPropagation();
     deleteUserFromFirebase(`${key}`)
@@ -52,7 +52,7 @@ const ShowUsersList: React.FunctionComponent<Props> =
             </tr>
           </TableHead>
           <TableBody>
-            {Object.values(users).map(({ firstName, secondName, url, key }) =>
+            {Object.values(usersFiltered).map(({ firstName, secondName, url, key }) =>
               <tr key={key} onClick={() => onDetails(key)} className={isActive(key)} title="Wyświetl szczegóły o użytkowniku">
                 <td>{firstName}</td>
                 <td>{secondName}</td>
