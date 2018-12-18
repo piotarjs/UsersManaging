@@ -3,11 +3,12 @@ import { editUser,filterUsersList, getUserFromFirebase, State } from '../../modu
 import AddUserToFirebase from './AddUserToFirebase';
 
 
-const mapStateToProps = ({ firebase: { isError, isLoading, users, usersFiltered } }: State) => ({
+const mapStateToProps = ({ firebase: { isError, isLoading, users, usersFiltered, usersSorted } }: State) => ({
     isError,
     isLoading,
     users,
-    usersFiltered
+    usersFiltered,
+    usersSorted
 });
 
 const mapDispatchToProps = {

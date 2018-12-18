@@ -9,10 +9,10 @@ import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router';
 import { applyMiddleware, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import AddUserToFirebase from "./components/AddUserToFirebase";
 import { base, storage } from './database';
 import './index.css';
 import createRootReducer from './module';
+import AddUserToFirebase from "./routes/AddUserToFirebase";
 
 
 

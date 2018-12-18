@@ -2,7 +2,7 @@ import { MDBBtn } from "mdbreact";
 import { Container, Row } from 'mdbreact';
 import * as React from 'react';
 import { Action, ActionCreator } from 'redux';
-import { UserDetails } from '../../interfaces';
+import { UserDetails } from '../../../../interfaces';
 
 interface Props {
   user: UserDetails['user'],

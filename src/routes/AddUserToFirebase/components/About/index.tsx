@@ -1,9 +1,8 @@
 import { connect } from 'react-redux';
-import { deleteUserFromFirebase, highligthChosenElement, redirect, State } from '../../module';
+import { deleteUserFromFirebase, highligthChosenElement, redirect, State } from '../../../../module';
 import About from './About';
 
-const mapStateToProps = ({ firebase: {  isEdited, user } }: State) => ({
-    isEdited,
+const mapStateToProps = ({ firebase: { user } }: State) => ({
     user
 });
 

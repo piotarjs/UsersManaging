@@ -4,7 +4,7 @@ import { Action, combineReducers } from 'redux';
 import { reducer as formReducer, reset } from 'redux-form';
 import { ThunkAction } from 'redux-thunk';
 import typeToReducer from 'type-to-reducer';
-import { ExtraArgument, UserDetails, UsersList } from './interfaces';
+import { ExtraArgument, SortByColumn, SortColumn, SortingOrder, UserDetails, UsersList } from './interfaces';
 
 
 // ---------------- Interfejsy i typy ----------------
@@ -12,15 +12,18 @@ import { ExtraArgument, UserDetails, UsersList } from './interfaces';
 export interface State {
   firebase: {
     inputFileKey: string,
-    isEdited: string,
+    listElementIsEdited: string,
     isError: false,
     isLoading: false,
     isUploading: false,
-    toDelete: string,
-    toEdit: string,
+    listElementToDelete: string,
+    listElementToEdit: string,
+    sortColumn: SortColumn,
+    sortingOrder: SortingOrder,
     user: UserDetails['user'],
     users: UsersList['users'],
-    usersFiltered: UsersList['users']
+    usersFiltered: UsersList['users'],
+    usersSorted: UsersList['users'],
   }
 };
 
@@ -46,7 +49,8 @@ const DETAILS = 'DETAILS';
 const DELETE_HOVER = 'DELETE_HOVER';
 const EDIT_HOVER = 'EDIT_HOVER';
 const CHANGE_KEY = 'CHANGE_KEY';
-const FILTER = 'FILTER'
+const FILTER = 'FILTER';
+const SORT = 'SORT';
 
 // ---------------------------------------------------
 
@@ -54,12 +58,14 @@ const FILTER = 'FILTER'
 
 const baseInitialState = {
   inputFileKey: Date.now().toString(),
-  isEdited: '',
   isError: false,
   isLoading: false,
   isUploading: false,
-  toDelete: '',
-  toEdit: '',
+  listElementIsEdited: '',
+  listElementToDelete: '',
+  listElementToEdit: '',
+  sortColumn: {},
+  sortingOrder: 'asc',
   user: {},
   users: {},
   usersFiltered: {}
@@ -99,8 +105,7 @@ export const addPending = () => ({
 
 export const addSuccess = (users: FirebaseReducer['users']) => ({
   type: `${CREATE}_${FULFILLED}`,
-  users,
-  usersFiltered: users
+  users
 });
 
 export const addError = (error: Error) => ({
@@ -132,8 +137,7 @@ export const addUserToFirebase = (user: AddUserToFirebase): Thunk =>
 
 export const deleteSuccess = (users: FirebaseReducer['users']) => ({
   type: `${DELETE}_${FULFILLED}`,
-  users,
-  usersFiltered: users
+  users
 });
 
 export const deleteError = (error: Error) => ({
@@ -171,8 +175,7 @@ export const getPending = () => ({
 
 export const getSuccess = (users: FirebaseReducer['users']) => ({
   type: `${RETRIEVE}_${FULFILLED}`,
-  users,
-  usersFiltered: users
+  users
 });
 
 export const getError = (error: Error) => ({
@@ -198,9 +201,10 @@ export const filterPending = () => ({
   type: `${FILTER}_${PENDING}`
 });
 
-export const filterSuccess = (usersFiltered: FirebaseReducer['users']) => ({
+export const filterSuccess = (usersFiltered: FirebaseReducer['users'], sortColumn: SortColumn) => ({
+  sortColumn,
   type: `${FILTER}_${FULFILLED}`,
-  usersFiltered
+  usersFiltered,
 });
 
 export const filterError = (error: Error) => ({
@@ -208,19 +212,71 @@ export const filterError = (error: Error) => ({
   type: `${FILTER}_${REJECTED}`,
 });
 
-export const filterUsersList = (usersList: FirebaseReducer['users'], phrase: string): Thunk => async (dispatch) => {
+export const filterUsersList = (usersSorted: FirebaseReducer['users'], phrase: string): Thunk => async (dispatch) => {
   dispatch(filterPending());
-  try {
-    const filteredList = Object.values(usersList).filter(({firstName}) => firstName.includes(phrase));
+  try {    
+    const filteredList = Object.values(usersSorted).filter(({firstName, secondName}) => firstName.toLowerCase().includes(phrase) || secondName.toLowerCase().includes(phrase));
     const usersFiltered = {};
     filteredList.forEach(({ firstName, key, secondName, url }) => usersFiltered[key] = { firstName, key, secondName, url });
-    dispatch(filterSuccess(usersFiltered));
+    const sortColumn: SortColumn = {
+      sortedByColumn: 'reset',
+      sortingOrder: 'reset'
+    };
+    dispatch(filterSuccess(usersFiltered, sortColumn));
   } catch (error) {
     dispatch(filterError(error));
   };
 };
 
 // --------------------------------------------------
+
+// --------- Sortowanie listy użytkowników ---------
+
+export const sortPending = () => ({
+  type: `${SORT}_${PENDING}`
+});
+
+export const sortSuccess = (usersSorted: FirebaseReducer['users'], sortingOrder: SortingOrder, sortColumn: SortColumn) =>  ({
+  sortColumn,
+  sortingOrder,
+  type: `${SORT}_${FULFILLED}`,
+  usersSorted
+});
+
+export const sortError = (error: Error) => ({
+  error: error.message,
+  type: `${SORT}_${REJECTED}`,
+});
+
+const sortBy = (a: string, b: string, sortingOrder: SortingOrder) => 
+  sortingOrder === 'asc'
+  ? 
+    a > b
+    ? 
+      1 : -1
+  : 
+    a > b
+    ?
+      -1 : 1
+
+export const sortUsersList = (usersFiltered: FirebaseReducer['users'], sortingOrder: SortingOrder, sortedByColumn: SortByColumn): Thunk => async (dispatch) => {
+  dispatch(sortPending());
+  try {
+    const usersSorted = {};
+    Object.values(usersFiltered).sort((a,b) => sortBy(a[sortedByColumn], b[sortedByColumn], sortingOrder))
+    .map(({ firstName, key, secondName, url }) => usersSorted[key] = { firstName, key, secondName, url });
+    const sortColumn = {
+      sortedByColumn,
+      sortingOrder
+    };
+    sortingOrder = (sortingOrder === 'asc')? 'desc' : 'asc';
+    dispatch(sortSuccess(usersSorted, sortingOrder, sortColumn));
+  } catch (error) {
+    dispatch(sortError(error));
+  };
+};
+
+// -------------------------------------------------
 
 // -- Edycja użytkownika - przekazanie jego danych --
 
@@ -251,10 +307,9 @@ export const editUser = ({ firstName, key, secondName, url }: UserDetails['user'
 // --------- Aktualizacja danych użytkownika ---------
 
 export const updateSuccess = (users: FirebaseReducer['users']) => ({
-  isEdited: '',
+  listElementIsEdited: '',
   type: `${UPDATE}_${FULFILLED}`,
-  users,
-  usersFiltered: users
+  users
 });
 
 export const updateError = (error: Error) => ({
@@ -296,8 +351,8 @@ export const redirect = (url: string): Thunk => (dispatch) => {
 
 // --- Podświetlenie wybranego elementu w tabeli ---
 
-export const detailsSuccess = (isEdited: string) => ({
-  isEdited,
+export const detailsSuccess = (listElementIsEdited: string) => ({
+  listElementIsEdited,
   type: `${DETAILS}_${FULFILLED}`
 });
 
@@ -318,8 +373,8 @@ export const highligthChosenElement = (key: string): Thunk => (dispatch) => {
 
 // --- Podświetlenie elementu na czerwono po wejściu na ikonę usunięcia ---
 
-export const onDeleteHoverSuccess = (toDelete: string) => ({
-  toDelete,
+export const onDeleteHoverSuccess = (listElementToDelete: string) => ({
+  listElementToDelete,
   type: `${DELETE_HOVER}_${FULFILLED}`
 });
 
@@ -362,8 +417,8 @@ export const onChangeKeyInputFile = (): Thunk => (dispatch) => {
 
 // ----- Podświetlenie elementu na niebesko po wejściu na ikonę edycji -----
 
-export const onEditHoverSuccess = (toEdit: string) => ({
-  toEdit,
+export const onEditHoverSuccess = (listElementToEdit: string) => ({
+  listElementToEdit,
   type: `${EDIT_HOVER}_${FULFILLED}`
 });
 
@@ -390,7 +445,8 @@ const firebaseReducer = typeToReducer({
       isError: false,
       isUploading: false,
       users,
-      usersFiltered: users
+      usersFiltered: users,
+      usersSorted: users
     }),
     PENDING: (state: FirebaseReducer) => ({
       ...state,
@@ -410,7 +466,8 @@ const firebaseReducer = typeToReducer({
       isError: false,
       isLoading: false,
       users,
-      usersFiltered: users
+      usersFiltered: users,
+      usersSorted: users
     }),
     PENDING: (state: FirebaseReducer) => ({
       ...state,
@@ -441,7 +498,8 @@ const firebaseReducer = typeToReducer({
       ...state,
       isError: false,
       users,
-      usersFiltered: users
+      usersFiltered: users,
+      usersSorted: users
     }),
     REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
       ...state,
@@ -450,13 +508,14 @@ const firebaseReducer = typeToReducer({
     }),
   },
   [UPDATE]: {
-    FULFILLED: (state: FirebaseReducer, { isEdited, users }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { listElementIsEdited, users }: FirebaseReducer) => ({
       ...state,
-      isEdited,
       isError: false,
       isUploading: false,
+      listElementIsEdited,
       users,
-      usersFiltered: users
+      usersFiltered: users,
+      usersSorted: users
     }),
     REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
       ...state,
@@ -466,11 +525,11 @@ const firebaseReducer = typeToReducer({
     }),
   },
   [DETAILS]: {
-    FULFILLED: (state: FirebaseReducer, { isEdited }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { listElementIsEdited }: FirebaseReducer) => ({
       ...state,
-      isEdited,
       isError: false,
       isUploading: false,
+      listElementIsEdited,
     }),
     REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
       ...state,
@@ -480,10 +539,10 @@ const firebaseReducer = typeToReducer({
     }),
   },
   [DELETE_HOVER]: {
-    FULFILLED: (state: FirebaseReducer, { toDelete }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { listElementToDelete }: FirebaseReducer) => ({
       ...state,
       isError: false,
-      toDelete
+      listElementToDelete
     }),
     REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
       ...state,
@@ -492,10 +551,10 @@ const firebaseReducer = typeToReducer({
     }),
   },
   [EDIT_HOVER]: {
-    FULFILLED: (state: FirebaseReducer, { toEdit }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { listElementToEdit }: FirebaseReducer) => ({
       ...state,
       isError: false,
-      toEdit
+      listElementToEdit
     }),
     REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
       ...state,
@@ -516,11 +575,34 @@ const firebaseReducer = typeToReducer({
     }),
   },
   [FILTER]: {
-    FULFILLED: (state: FirebaseReducer, { usersFiltered }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { sortColumn, usersFiltered }: FirebaseReducer) => ({
       ...state,
       isError: false,
       isLoading: false,
-      usersFiltered
+      sortColumn,
+      usersFiltered,
+      usersSorted: usersFiltered
+    }),
+    PENDING: (state: FirebaseReducer) => ({
+      ...state,
+      isError: false,
+      isLoading: true
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+      isLoading: false
+    }),
+  },
+  [SORT]: {
+    FULFILLED: (state: FirebaseReducer, { sortColumn, sortingOrder, usersSorted }: FirebaseReducer) => ({
+      ...state,
+      isError: false,
+      isLoading: false,
+      sortColumn,
+      sortingOrder,
+      usersSorted
     }),
     PENDING: (state: FirebaseReducer) => ({
       ...state,

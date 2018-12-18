@@ -2,7 +2,7 @@ import { MDBBtn } from "mdbreact";
 import * as React from 'react';
 import { Action, ActionCreator } from 'redux';
 import { Field, InjectedFormProps, reduxForm } from 'redux-form';
-import {validate} from '../../validate';
+import {validate} from '../../../../validate';
 import InputText from '../InputText';
 import UploadFile from '../UploadFile';
 
@@ -15,9 +15,9 @@ interface Props {
 
 const EditUser: React.FunctionComponent<Props & InjectedFormProps > = 
 ({ handleSubmit, highligthChosenElement, invalid, pristine, redirect, submitting, updateUserInFirebase }) => {
-  const onHighlightBack =() => {
-    highligthChosenElement();
-    redirect('/');
+  const onHighlightBack = (cb: () => void, key: string) => ({ target }) => {
+    cb();
+    redirect(key);
   }
   return (
     <div>
@@ -33,7 +33,7 @@ const EditUser: React.FunctionComponent<Props & InjectedFormProps > =
           <Field name="uploadFile" component={UploadFile} />
         </div>
         <div className="mt-3">
-          <MDBBtn color="dark" size="sm" type="submit" onClick={onHighlightBack}>Powrót</MDBBtn>
+          <MDBBtn color="dark" size="sm" type="submit" onClick={onHighlightBack(highligthChosenElement, '/')}>Powrót</MDBBtn>
           <MDBBtn color="success" size="sm" type="submit" disabled={invalid || pristine || submitting}>Zapisz</MDBBtn>
         </div>
       </form>

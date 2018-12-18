@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { addUserToFirebase, onChangeKeyInputFile } from '../../module';
+import { addUserToFirebase, onChangeKeyInputFile } from '../../../../module';
 import AddUserForm from './AddUserForm';
 
 const mapDispatchToProps = {
