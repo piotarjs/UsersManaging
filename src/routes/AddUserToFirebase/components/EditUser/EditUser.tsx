@@ -13,14 +13,15 @@ interface Props {
   highligthChosenElement: ActionCreator<Action>
 };
 
-const EditUser: React.FunctionComponent<Props & InjectedFormProps > = 
-({ handleSubmit, highligthChosenElement, invalid, pristine, redirect, submitting, updateUserInFirebase }) => {
-  const onHighlightBack = (cb: () => void, key: string) => ({ target }) => {
-    cb();
-    redirect(key);
-  }
-  return (
-    <div>
+class EditUser extends React.Component<Props & InjectedFormProps>{
+  public onHighlightBack = () =>{
+    this.props.highligthChosenElement();
+    this.props.redirect('/');
+  };
+  public render(){
+    const { handleSubmit, invalid, pristine, submitting, updateUserInFirebase } = this.props
+    return(
+      <div>
       <p className="h4 text-center py-4">Zmień dane użytkownika</p>
       <form onSubmit={handleSubmit(updateUserInFirebase)} className="md-form">
         <div>
@@ -33,13 +34,14 @@ const EditUser: React.FunctionComponent<Props & InjectedFormProps > =
           <Field name="uploadFile" component={UploadFile} />
         </div>
         <div className="mt-3">
-          <MDBBtn color="dark" size="sm" type="submit" onClick={onHighlightBack(highligthChosenElement, '/')}>Powrót</MDBBtn>
+          <MDBBtn color="dark" size="sm" type="submit" onClick={this.onHighlightBack}>Powrót</MDBBtn>
           <MDBBtn color="success" size="sm" type="submit" disabled={invalid || pristine || submitting}>Zapisz</MDBBtn>
         </div>
       </form>
     </div>
-  )
-}
+    );
+  };
+};
 
 export default reduxForm({
   enableReinitialize: true,

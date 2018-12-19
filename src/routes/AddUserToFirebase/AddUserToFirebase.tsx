@@ -33,19 +33,24 @@ class AddUserToFirebase extends React.Component<Props> {
       editUser(users[match.params.key]);
     }
   }
+  public filterList =(users: UsersList['users']) => ({ target: { value } }: React.ChangeEvent<HTMLInputElement> ) => {
+    this.props.filterUsersList(users, value);
+  }
   public render() {
-    const { users, usersFiltered, isLoading, isError, match, filterUsersList } = this.props;
+    const { users, usersFiltered, isLoading, isError, match } = this.props;
     return (
       <Container>
         <Row className="mt-4">
           <Col lg="8">
-            <input
-              name="filerList"
-              type="text"
-              className="form-control mb-2"
-              placeholder="Wpisz poszukiwanego użytkownika"
-              onChange={({ target }) => filterUsersList(users, target.value)}
-            />
+            <form className="md-form">
+              <input
+                name="filerList"
+                type="text"
+                className="form-control mb-2"
+                placeholder="Wpisz poszukiwanego użytkownika"
+                onChange={this.filterList(users)}
+              />
+            </form>
             {isLoading
               ? <Row className="justify-content-center mt-5"><Loader type="ball-clip-rotate-multiple" active={true} /></Row>
               : isError

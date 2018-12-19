@@ -288,8 +288,9 @@ export const editError = (error: Error) => ({
   error: error.message,
   type: `${EDIT}_${REJECTED}`,
 });
-export const editUser = ({ firstName, key, secondName, url }: UserDetails['user']): Thunk => (dispatch) => {
+export const editUser = ( userData: UserDetails['user']): Thunk => (dispatch) => {
   try {
+    const { firstName, key, secondName, url } = userData;
     const user = {
       firstName,
       key,

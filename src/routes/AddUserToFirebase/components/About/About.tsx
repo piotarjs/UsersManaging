@@ -11,29 +11,34 @@ interface Props {
   highligthChosenElement: ActionCreator<Action>
 };
 
-const About: React.FunctionComponent<Props> = ({ user: { firstName, secondName, url, key }, redirect, deleteUserFromFirebase, highligthChosenElement }) => {
-  const onHighlightBack = () => {
-    highligthChosenElement();
-    redirect('/');
-  } 
-  return (
-    <Container>
-      <Row className="justify-content-center">
-        <MDBBtn color="dark" size="sm" type="submit" onClick={onHighlightBack}>Powrót</MDBBtn>
-        <MDBBtn color="danger" size="sm" type="submit" onClick={() => deleteUserFromFirebase(key)}>Usuń</MDBBtn>
-      </Row>
-      {(firstName && secondName && url) &&
-        <Row className="py-4 justify-content-center">
-          <img
-            src={url}
-            alt="Zdjęcie profilowe"
-            className="rounded-circle w-75 h-75"
-          />
-          <h4 className="font-weight-bold mb-3">{firstName} {secondName}</h4>
-        </Row>}
-    </Container>
-  );
+class About extends React.Component<Props>{
+  public onHighlightBack = () => {
+    this.props.highligthChosenElement();
+    this.props.redirect('/');
+  }
+  public deleteUser = (userKey: string) => () => {
+    this.props.deleteUserFromFirebase(userKey)
+  }
+  public render(){
+    const { user: { firstName, secondName, key, url } } = this.props
+    return(
+      <Container>
+        <Row className="justify-content-center">
+          <MDBBtn color="dark" size="sm" type="submit" onClick={this.onHighlightBack}>Powrót</MDBBtn>
+          <MDBBtn color="danger" size="sm" type="submit" onClick={this.deleteUser(key)}>Usuń</MDBBtn>
+        </Row>
+        {(firstName && secondName && url) &&
+          <Row className="py-4 justify-content-center">
+            <img
+              src={url}
+              alt="Zdjęcie profilowe"
+              className="rounded-circle w-75 h-75"
+            />
+            <h4 className="font-weight-bold mb-3">{firstName} {secondName}</h4>
+          </Row>}
+      </Container>
+    );
+  }; 
 }
-
 
 export default About;

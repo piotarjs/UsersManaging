@@ -41,12 +41,3 @@ export interface SortColumn{
     sortedByColumn: SortByColumn,
     sortingOrder: SortingOrder
 }
-/*export type SortByColumn = 'firstName' | 'secondName' | 'reset'
-
-export type SortingOrder = 'asc' | 'desc' | 'reset' 
-
-export interface SortColumn{
-    sortedByColumn: SortByColumn,
-    sortingOrder: SortingOrder
-}*/
-
