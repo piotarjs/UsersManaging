@@ -3,28 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "axios": "^0.18.0",
+    "@types/node": "^10.12.10",
+    "@types/react": "^16.7.7",
+    "@types/react-dom": "^16.0.10",
+    "@types/react-redux": "^6.0.10",
+    "@types/react-router": "^4.4.1",
+    "@types/redux-form": "^7.4.12",
+    "awesome-typescript-loader": "^5.2.1",
+    "classnames": "^2.2.6",
+    "connected-react-router": "^5.0.1",
     "firebase": "^5.5.8",
     "loaders.css": "^0.1.2",
     "mdbreact": "^4.8.1",
     "node-sass": "^4.10.0",
     "react": "^16.5.2",
-    "react-css-modules": "^4.7.7",
     "react-dom": "^16.5.2",
     "react-icon": "^1.0.0",
     "react-loaders": "^3.0.1",
     "react-redux": "^5.0.7",
     "react-scripts": "2.0.5",
+    "react-scripts-ts": "^4.0.8",
     "redux": "^4.0.1",
     "redux-form": "^7.4.2",
     "redux-thunk": "^2.3.0",
-    "type-to-reducer": "^1.1.0"
+    "source-map-loader": "^0.2.4",
+    "type-to-reducer": "^1.1.0",
+    "typescript": "^3.1.6"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -36,7 +46,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "redux-devtools-extension": "^2.13.5",
-    "redux-saga": "^0.16.2"
+    "@types/firebase": "^3.2.1",
+    "@types/history": "^4.7.2",
+    "redux-devtools-extension": "^2.13.5"
   }
 }

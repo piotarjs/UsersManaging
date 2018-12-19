@@ -1,0 +1,33 @@
+tbody tr:hover {
+  background-color: 	#f0f0f5;
+  cursor: pointer;
+  transition: 1.2s;
+}
+tbody tr {
+  transition: 1.2s;
+}
+table td {
+  font-size: 1.0rem;
+}
+@media only screen and (max-width: 767px) {
+  table td {
+    font-size: 0.7rem;
+  }
+}
+.isActive {
+  background-color:#f0f0f5;
+  opacity: 0.6;
+}
+onDelete:hover{
+  background-color: crimson;
+}
+
+.errorText {
+  font-size: 0.6rem
+}
+
+.sortList:hover {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: 1.2s;
+}
