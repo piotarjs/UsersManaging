@@ -6,8 +6,6 @@ interface FormData{
   uploadFile?: string
 }
 
-
-
 export const validate  = ({ firstName, secondName, uploadFile }: FormData): FormErrors<FormData> => {
     const errors: FormErrors<FormData> = {};
     !firstName? errors.firstName = 'Podaj imię!' : 
@@ -18,12 +16,6 @@ export const validate  = ({ firstName, secondName, uploadFile }: FormData): Form
   
     !uploadFile? errors.uploadFile = 'Wybierz plik!' : 
       uploadFile.length < 1? errors.uploadFile = 'Wybierz plik!' : errors.uploadFile = '';
-    
-    // console.log(typeof uploadFile);
 
-
-    
-    
-  
     return errors;
 }

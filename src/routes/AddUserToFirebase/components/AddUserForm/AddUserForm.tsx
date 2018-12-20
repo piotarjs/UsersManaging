@@ -36,7 +36,6 @@ const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = ({
     </form>
   </div>
   
-
 export default reduxForm({
   form: 'List',
   validate

@@ -17,7 +17,6 @@ const UploadFile: React.FunctionComponent<Props & WrappedFieldProps> = ({ fileNa
       </div>
       <div>
         {(touched) && (error && <span className="p-1 bg-danger rounded text-white errorText">{error}</span>)}
-        {/*touched && fileName === 'Wybierz plik' && <span className="p-1 bg-danger rounded text-white errorText">{`${fileName}!`}</span>*/}
       </div>
     </div>
   );
