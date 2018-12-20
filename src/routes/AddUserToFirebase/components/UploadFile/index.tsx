@@ -1,9 +1,13 @@
 import { connect } from 'react-redux';
-import { State } from '../../../../module';
+import { getFileName, State } from '../../../../module';
 import UploadFile from './UploadFile';
 
-const mapStateToProps = ({ firebase: { inputFileKey } }: State) => ({
-    inputFileKey
+const mapStateToProps = ({ firebase: { fileName } }: State) => ({
+    fileName
 });
 
-export default connect(mapStateToProps, null)(UploadFile) as any;
+const mapDispatchToProps = {
+    getFileName
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UploadFile) as any;
