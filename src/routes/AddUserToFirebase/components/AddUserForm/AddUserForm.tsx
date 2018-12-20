@@ -2,9 +2,9 @@ import { MDBBtn } from "mdbreact";
 import * as React from 'react';
 import { Action, ActionCreator } from 'redux';
 import { Field, InjectedFormProps, reduxForm } from 'redux-form';
+import InputText from '../../../../shared/InputText';
+import UploadFile from '../../../../shared/UploadFile';
 import { validate } from '../../../../validate';
-import InputText from '../InputText';
-import UploadFile from '../UploadFile';
 
 interface Props {
   addUserToFirebase: ActionCreator<Action>,
