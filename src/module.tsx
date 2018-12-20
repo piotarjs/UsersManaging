@@ -6,7 +6,6 @@ import { ThunkAction } from 'redux-thunk';
 import typeToReducer from 'type-to-reducer';
 import { ExtraArgument, SortByColumn, SortColumn, SortingOrder, UserDetails, UsersList } from './interfaces';
 
-
 // ---------------- Interfejsy i typy ----------------
 
 export interface State {
@@ -449,7 +448,6 @@ export const getFileName = ({target: {value}}: React.ChangeEvent<HTMLInputElemen
 
 // -------------------------------------------------------------------------
 
-
 const firebaseReducer = typeToReducer({
   [CREATE]: {
     FULFILLED: (state: FirebaseReducer, { fileName, users }: FirebaseReducer) => ({
@@ -631,8 +629,7 @@ const firebaseReducer = typeToReducer({
       isError: true,
       isLoading: false
     }),
-  },
-  // ['@@router/LOCATION_CHANGE']: () => 
+  }, 
 }, baseInitialState);
 
 export default (history: History) => combineReducers({
