@@ -11,7 +11,7 @@ import { ExtraArgument, SortByColumn, SortColumn, SortingOrder, UserDetails, Use
 
 export interface State {
   firebase: {
-    inputFileKey: string,
+    fileName: string,
     listElementIsEdited: string,
     isError: false,
     isLoading: false,
@@ -35,6 +35,12 @@ type Thunk = ThunkAction<void, State, ExtraArgument, Action>;
 
 // ---------------------------------------------------
 
+// ----- Definicja stałych -----
+
+const INITIAL_FILENAME = 'Wybierz plik';
+
+// -----------------------------
+
 // ----------------- Definicja akcji -----------------
 
 const PENDING = 'PENDING';
@@ -48,16 +54,16 @@ const UPDATE = 'UPDATE';
 const DETAILS = 'DETAILS';
 const DELETE_HOVER = 'DELETE_HOVER';
 const EDIT_HOVER = 'EDIT_HOVER';
-const CHANGE_KEY = 'CHANGE_KEY';
 const FILTER = 'FILTER';
 const SORT = 'SORT';
+const GET_FILE_NAME = 'GET_FILE_NAME';
 
 // ---------------------------------------------------
 
 // --------------- Inicjalizacja stanu ---------------
 
 const baseInitialState = {
-  inputFileKey: Date.now().toString(),
+  fileName: 'Wybierz plik',
   isError: false,
   isLoading: false,
   isUploading: false,
@@ -103,7 +109,8 @@ export const addPending = () => ({
   type: `${CREATE}_${PENDING}`
 });
 
-export const addSuccess = (users: FirebaseReducer['users']) => ({
+export const addSuccess = (users: FirebaseReducer['users'], fileName: string) => ({
+  fileName,
   type: `${CREATE}_${FULFILLED}`,
   users
 });
@@ -118,11 +125,12 @@ export const addUserToFirebase = (user: AddUserToFirebase): Thunk =>
     dispatch(addPending());
     const usersRef = base.ref('users');
     const pictureRef = storage.ref('personalPicture');
+    const fileName = INITIAL_FILENAME;
     try {
       await addUser(user, usersRef, pictureRef);
       usersRef.on('value', (data) => {
         if (data) {
-          dispatch(addSuccess(data.val()))
+          dispatch(addSuccess(data.val(), fileName))
         }
       });
       dispatch(reset('List'));
@@ -307,7 +315,8 @@ export const editUser = ( userData: UserDetails['user']): Thunk => (dispatch) =>
 
 // --------- Aktualizacja danych użytkownika ---------
 
-export const updateSuccess = (users: FirebaseReducer['users']) => ({
+export const updateSuccess = (users: FirebaseReducer['users'], fileName: string) => ({
+  fileName,
   listElementIsEdited: '',
   type: `${UPDATE}_${FULFILLED}`,
   users
@@ -322,11 +331,12 @@ export const updateUserInFirebase = (user: AddUserToFirebase): Thunk =>
   async (dispatch, getState, { base, storage }) => {
     const usersRef = base.ref('users');
     const pictureRef = storage.ref('personalPicture');
+    const fileName = INITIAL_FILENAME;
     try {
       await pictureRef.child(user.key).delete().then(() => addUser(user, usersRef, pictureRef));
       usersRef.on('value', (data) => {
         if (data) {
-          dispatch(updateSuccess(data.val()))
+          dispatch(updateSuccess(data.val(), fileName))
         }
       });
       dispatch(reset('List'));
@@ -394,28 +404,6 @@ export const onDeleteHoverHighlight = (type: string, key: string): Thunk => (dis
 
 // ------------------------------------------------------------------------ 
 
-// --- Zmiana klucza w InputFile w celu resetu po wysłaniu formularza ---
-
-export const onChangeKeySuccess = (inputFileKey: string) => ({
-  inputFileKey,
-  type: `${CHANGE_KEY}_${FULFILLED}`
-});
-
-export const onChangeKeyError = (error: Error) => ({
-  error: error.message,
-  type: `${CHANGE_KEY}_${REJECTED}`
-});
-
-export const onChangeKeyInputFile = (): Thunk => (dispatch) => {
-  try {
-    dispatch(onChangeKeySuccess(Date.now().toString()));
-  } catch (error) {
-    dispatch(onDeleteHoverError(error))
-  }
-}
-
-// ----------------------------------------------------------------------
-
 // ----- Podświetlenie elementu na niebesko po wejściu na ikonę edycji -----
 
 export const onEditHoverSuccess = (listElementToEdit: string) => ({
@@ -438,11 +426,35 @@ export const onEditHoverHighlight = (type: string, key: string): Thunk => (dispa
 
 // -------------------------------------------------------------------------
 
+// ----- Pobranie nazwy pliku do costomowego uploadFile -----
+
+export const getFileNameSuccess = (fileName: string) => ({
+  fileName,
+  type: `${GET_FILE_NAME}_${FULFILLED}`
+});
+
+export const getFileNameError = (error: Error) => ({
+  error: error.message,
+  type: `${GET_FILE_NAME}_${REJECTED}`
+});
+
+export const getFileName = ({target: {value}}: React.ChangeEvent<HTMLInputElement>): Thunk => (dispatch) => {
+  try {
+    const fileName = (value.length > 0)? value.slice("C:/\fakepath\/".length) : INITIAL_FILENAME;
+    dispatch(getFileNameSuccess(fileName));
+  } catch (error) {
+    dispatch(onDeleteHoverError(error))
+  }
+}
+
+// -------------------------------------------------------------------------
+
 
 const firebaseReducer = typeToReducer({
   [CREATE]: {
-    FULFILLED: (state: FirebaseReducer, { users }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { fileName, users }: FirebaseReducer) => ({
       ...state,
+      fileName,
       isError: false,
       isUploading: false,
       users,
@@ -509,8 +521,9 @@ const firebaseReducer = typeToReducer({
     }),
   },
   [UPDATE]: {
-    FULFILLED: (state: FirebaseReducer, { listElementIsEdited, users }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { fileName, listElementIsEdited, users }: FirebaseReducer) => ({
       ...state,
+      fileName,
       isError: false,
       isUploading: false,
       listElementIsEdited,
@@ -563,18 +576,6 @@ const firebaseReducer = typeToReducer({
       isError: true,
     }),
   },
-  [CHANGE_KEY]: {
-    FULFILLED: (state: FirebaseReducer, { inputFileKey }: FirebaseReducer) => ({
-      ...state,
-      inputFileKey,
-      isError: false
-    }),
-    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
-      ...state,
-      error,
-      isError: true,
-    }),
-  },
   [FILTER]: {
     FULFILLED: (state: FirebaseReducer, { sortColumn, usersFiltered }: FirebaseReducer) => ({
       ...state,
@@ -609,6 +610,20 @@ const firebaseReducer = typeToReducer({
       ...state,
       isError: false,
       isLoading: true
+    }),
+    REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
+      ...state,
+      error,
+      isError: true,
+      isLoading: false
+    }),
+  },
+  [GET_FILE_NAME]: {
+    FULFILLED: (state: FirebaseReducer, { fileName }: FirebaseReducer) => ({
+      ...state,
+      fileName,
+      isError: false,
+      isLoading: false,
     }),
     REJECTED: (state: FirebaseReducer, { error }: { error: string }) => ({
       ...state,

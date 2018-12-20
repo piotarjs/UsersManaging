@@ -2,19 +2,17 @@ import { MDBBtn } from "mdbreact";
 import * as React from 'react';
 import { Action, ActionCreator } from 'redux';
 import { Field, InjectedFormProps, reduxForm } from 'redux-form';
+import InputText from '../../../../shared/InputText';
+import UploadFile from '../../../../shared/UploadFile';
 import { validate } from '../../../../validate';
-import InputText from '../InputText';
-import UploadFile from '../UploadFile';
 
 interface Props {
   addUserToFirebase: ActionCreator<Action>,
-  onChangeKeyInputFile: ActionCreator<Action>
 }
 
 const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = ({
   handleSubmit,
   addUserToFirebase,
-  onChangeKeyInputFile,
   pristine,
   submitting,
   invalid
@@ -32,7 +30,7 @@ const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = ({
         <Field name="uploadFile" component={UploadFile} />
       </div>
       <div className="mt-3">
-        <MDBBtn color="success" size="sm" type="submit" onClick={onChangeKeyInputFile} disabled={invalid || pristine || submitting}>Zapisz</MDBBtn>
+        <MDBBtn color="success" size="sm" type="submit" disabled={invalid || pristine || submitting}>Zapisz</MDBBtn>
       </div>
       
     </form>

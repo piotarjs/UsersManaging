@@ -48,7 +48,7 @@ class ShowUsersList extends React.Component<Props> {
 
   public isActive = (key: string) => classNames({
     "bg-danger": this.props.listElementToDelete === key,
-    "bg-info": this.props.listElementToEdit === key,
+    "bg-primary": this.props.listElementToEdit === key,
     "disabled": this.props.listElementIsEdited === key,
     "isActive": this.props.listElementIsEdited === key,
   });
