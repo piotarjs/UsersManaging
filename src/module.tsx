@@ -6,6 +6,12 @@ import { ThunkAction } from 'redux-thunk';
 import typeToReducer from 'type-to-reducer';
 import { ExtraArgument, SortByColumn, SortColumn, SortingOrder, UserDetails, UsersList } from './interfaces';
 
+// ----- Definicja stałych -----
+
+const INITIAL_FILENAME = 'Wybierz plik';
+
+// -----------------------------
+
 // ---------------- Interfejsy i typy ----------------
 
 export interface State {
@@ -30,15 +36,11 @@ interface AddUserToFirebase { firstName: string, key: string, secondName: string
 
 type FirebaseReducer = State['firebase'];
 
+type ResetFileName = 'Wybierz plik';
+
 type Thunk = ThunkAction<void, State, ExtraArgument, Action>;
 
 // ---------------------------------------------------
-
-// ----- Definicja stałych -----
-
-const INITIAL_FILENAME = 'Wybierz plik';
-
-// -----------------------------
 
 // ----------------- Definicja akcji -----------------
 
@@ -349,8 +351,21 @@ export const updateUserInFirebase = (user: AddUserToFirebase): Thunk =>
 
 // -------------------- Routing --------------------
 
-export const redirect = (url: string): Thunk => (dispatch) => {
-  try {
+export const redirectSuccess = (fileName: ResetFileName) => ({
+    fileName,
+    type: `${GET_FILE_NAME}_${FULFILLED}`
+});
+
+export const redirectError = (error: Error) => ({
+  error: error.message,
+  type: `${GET_FILE_NAME}_${REJECTED}`
+});
+
+export const redirect = (url: string, resetFileName: string): Thunk => (dispatch) => {
+  try { 
+    if(resetFileName){
+      dispatch(redirectSuccess(INITIAL_FILENAME));
+    }
     dispatch(push(url));
   } catch (error) {
     dispatch(getError(error))

@@ -6,16 +6,41 @@ interface FormData{
   uploadFile?: string
 }
 
+const checkFileType = (file: any): string => file.type;
+
+
 export const validate  = ({ firstName, secondName, uploadFile }: FormData): FormErrors<FormData> => {
     const errors: FormErrors<FormData> = {};
-    !firstName? errors.firstName = 'Podaj imię!' : 
-      firstName.length < 3? errors.firstName = 'Imię musi składać się z co najmniej 3 liter' : errors.firstName = '';
     
-    !secondName? errors.secondName = 'Podaj nazwisko!' : 
-    secondName.length < 3? errors.secondName = 'Nazwisko musi składać się z co najmniej 3 liter' : errors.secondName = '';
+    errors.firstName = firstName
+    ?
+      firstName.length > 2
+      ?
+      ''
+      :
+      'Imię musi składać się z co najmniej 3 liter'
+    :
+    'Podaj imię!'
+    
+    errors.secondName = secondName
+    ?
+    secondName.length > 2
+      ?
+      ''
+      :
+      'Nazwisko musi składać się z co najmniej 3 liter'
+    :
+    'Podaj nazwisko!'
   
-    !uploadFile? errors.uploadFile = 'Wybierz plik!' : 
-      uploadFile.length < 1? errors.uploadFile = 'Wybierz plik!' : errors.uploadFile = '';
-
+    errors.uploadFile = (uploadFile && uploadFile.length > 0)
+    ? 
+      checkFileType(uploadFile[0]).match(/image\/*/)
+      ?
+      ''
+      :
+      'Wybierz plik graficzny' 
+    : 
+    'Wybierz plik!';
+    
     return errors;
 }

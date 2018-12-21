@@ -16,12 +16,12 @@ interface Props {
 
 class EditUser extends React.Component<Props & InjectedFormProps>{
   public onHighlightBack = () => (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.props.redirect('/');
+    this.props.redirect('/', 'reset');
     this.props.highligthChosenElement();
-    this.props.getFileName(e);
+    // this.props.getFileName(e);
   };
   public render(){
-    const { handleSubmit, invalid, pristine, submitting, updateUserInFirebase } = this.props
+    const { handleSubmit, pristine, submitting, updateUserInFirebase } = this.props
     return(
       <div>
       <p className="h4 text-center py-4">Zmień dane użytkownika</p>
@@ -37,7 +37,7 @@ class EditUser extends React.Component<Props & InjectedFormProps>{
         </div>
         <div className="mt-3">
           <MDBBtn color="dark" size="sm" type="submit" onClick={this.onHighlightBack()}>Powrót</MDBBtn>
-          <MDBBtn color="success" size="sm" type="submit" disabled={invalid || pristine || submitting}>Zapisz</MDBBtn>
+          <MDBBtn color="success" size="sm" type="submit" disabled={pristine || submitting}>Zapisz</MDBBtn>
         </div>
       </form>
     </div>

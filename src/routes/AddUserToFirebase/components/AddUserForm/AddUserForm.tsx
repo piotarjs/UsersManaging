@@ -15,7 +15,6 @@ const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = ({
   addUserToFirebase,
   pristine,
   submitting,
-  invalid
 }) =>
   <div>
     <p className="h4 text-center py-4">Wpisz dane użytkownika</p>
@@ -30,7 +29,7 @@ const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = ({
         <Field name="uploadFile" component={UploadFile} />
       </div>
       <div className="mt-3">
-        <MDBBtn color="success" size="sm" type="submit" disabled={invalid || pristine || submitting}>Zapisz</MDBBtn>
+        <MDBBtn color="success" size="sm" type="submit" disabled={pristine || submitting}>Zapisz</MDBBtn>
       </div>
       
     </form>
