@@ -3,11 +3,8 @@ import { FormErrors } from 'redux-form';
 interface FormData{
   firstName?: string,
   secondName?: string,
-  uploadFile?: string
+  uploadFile?: FileList
 }
-
-const checkFileType = (file: any): string => file.type;
-
 
 export const validate  = ({ firstName, secondName, uploadFile }: FormData): FormErrors<FormData> => {
     const errors: FormErrors<FormData> = {};
@@ -31,10 +28,10 @@ export const validate  = ({ firstName, secondName, uploadFile }: FormData): Form
       'Nazwisko musi składać się z co najmniej 3 liter'
     :
     'Podaj nazwisko!'
-  
+
     errors.uploadFile = (uploadFile && uploadFile.length > 0)
     ? 
-      checkFileType(uploadFile[0]).match(/image\/*/)
+      uploadFile[0].type.match(/image\/*/)
       ?
       ''
       :

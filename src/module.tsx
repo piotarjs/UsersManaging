@@ -361,11 +361,9 @@ export const redirectError = (error: Error) => ({
   type: `${GET_FILE_NAME}_${REJECTED}`
 });
 
-export const redirect = (url: string, resetFileName: string): Thunk => (dispatch) => {
+export const redirect = (url: string): Thunk => (dispatch) => {
   try { 
-    if(resetFileName){
-      dispatch(redirectSuccess(INITIAL_FILENAME));
-    }
+    dispatch(redirectSuccess(INITIAL_FILENAME));
     dispatch(push(url));
   } catch (error) {
     dispatch(getError(error))
