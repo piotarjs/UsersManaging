@@ -6,10 +6,10 @@ enum PLACEHOLDER {
   secondName = 'Nazwisko',
 }
 
-const InputText: React.FunctionComponent<WrappedFieldProps> = ({ input, meta: { active, error, touched } }) => 
+const InputText: React.FunctionComponent<WrappedFieldProps> = ({ input, meta: { error, submitFailed } }) => 
   <div>
     <input type="text" {...input} className="form-control mb-0" placeholder={PLACEHOLDER[input.name]} autoComplete="off" />
-    {(touched) && ((error && <span className="p-1 bg-danger rounded text-white errorText">{error}</span>))}
+    {(submitFailed) && ((error && <span className="p-1 bg-danger rounded text-white errorText">{error}</span>))}
   </div>
 
 export default InputText;

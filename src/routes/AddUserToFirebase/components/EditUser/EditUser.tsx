@@ -11,17 +11,15 @@ interface Props {
   updateUserInFirebase: ActionCreator<Action>,
   editUser: ActionCreator<Action>,
   highligthChosenElement: ActionCreator<Action>,
-  getFileName: ActionCreator<Action>,
 };
 
 class EditUser extends React.Component<Props & InjectedFormProps>{
-  public onHighlightBack = () => (e: React.ChangeEvent<HTMLInputElement>) => {
+  public onHighlightBack = () =>  {
     this.props.redirect('/');
     this.props.highligthChosenElement();
-    this.props.getFileName(e);
   };
   public render(){
-    const { handleSubmit, invalid, pristine, submitting, updateUserInFirebase } = this.props
+    const { handleSubmit, pristine, submitting, updateUserInFirebase } = this.props
     return(
       <div>
       <p className="h4 text-center py-4">Zmień dane użytkownika</p>
@@ -36,8 +34,8 @@ class EditUser extends React.Component<Props & InjectedFormProps>{
           <Field name="uploadFile" component={UploadFile} />
         </div>
         <div className="mt-3">
-          <MDBBtn color="dark" size="sm" type="submit" onClick={this.onHighlightBack()}>Powrót</MDBBtn>
-          <MDBBtn color="success" size="sm" type="submit" disabled={invalid || pristine || submitting}>Zapisz</MDBBtn>
+          <MDBBtn color="dark" size="sm" type="submit" onClick={this.onHighlightBack}>Powrót</MDBBtn>
+          <MDBBtn color="success" size="sm" type="submit" disabled={pristine || submitting}>Zapisz</MDBBtn>
         </div>
       </form>
     </div>
