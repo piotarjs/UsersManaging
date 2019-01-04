@@ -223,8 +223,9 @@ export const filterError = (error: Error) => ({
 
 export const filterUsersList = (usersSorted: FirebaseReducer['users'], phrase: string): Thunk => async (dispatch) => {
   dispatch(filterPending());
+  const lowerCasePhrase = phrase.toLowerCase();
   try {    
-    const filteredList = Object.values(usersSorted).filter(({firstName, secondName}) => firstName.toLowerCase().includes(phrase) || secondName.toLowerCase().includes(phrase));
+    const filteredList = Object.values(usersSorted).filter(({firstName, secondName}) => firstName.toLowerCase().includes(lowerCasePhrase) || secondName.toLowerCase().includes(lowerCasePhrase));
     const usersFiltered = {};
     filteredList.forEach(({ firstName, key, secondName, url }) => usersFiltered[key] = { firstName, key, secondName, url });
     const sortColumn: SortColumn = {
