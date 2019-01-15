@@ -13,7 +13,6 @@ interface Props {
 const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = ({
   handleSubmit,
   addUserToFirebase,
-  pristine,
   submitting,
 }) =>
   <div>
@@ -29,7 +28,7 @@ const AddUserForm: React.FunctionComponent<Props & InjectedFormProps> = ({
         <Field name="uploadFile" component={UploadFile} />
       </div>
       <div className="mt-3">
-        <MDBBtn color="success" size="sm" type="submit" disabled={pristine || submitting}>Zapisz</MDBBtn>
+        <MDBBtn color="success" size="sm" type="submit" disabled={submitting}>Zapisz</MDBBtn>
       </div>
       
     </form>

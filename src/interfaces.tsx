@@ -11,10 +11,11 @@ export interface UsersList{
 
 export interface UserDetails{
     user: {
+        fileName: string,
         firstName: string,
-    key: string,
-    secondName: string,
-    url: string
+        key: string,
+        secondName: string,
+        url: string
     }
 }
 

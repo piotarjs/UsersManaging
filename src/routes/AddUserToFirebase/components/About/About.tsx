@@ -14,7 +14,7 @@ interface Props {
 class About extends React.Component<Props>{
   public onHighlightBack = () => {
     this.props.highligthChosenElement();
-    this.props.redirect('/');
+    this.props.redirect('/UsersManaging');
   }
   public deleteUser = (userKey: string) => () => {
     this.props.deleteUserFromFirebase(userKey)

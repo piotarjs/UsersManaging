@@ -3,7 +3,7 @@ import { getFileName, State } from '../../module';
 import UploadFile from './UploadFile';
 
 const mapStateToProps = ({ firebase: { fileName } }: State) => ({
-    fileName
+    fileName, 
 });
 
 const mapDispatchToProps = {

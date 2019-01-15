@@ -7,6 +7,7 @@ import UploadFile from '../../../../shared/UploadFile';
 import {validate} from '../../../../validate';
 
 interface Props {
+  fileName: string,
   redirect: ActionCreator<Action>,
   updateUserInFirebase: ActionCreator<Action>,
   editUser: ActionCreator<Action>,
@@ -15,11 +16,11 @@ interface Props {
 
 class EditUser extends React.Component<Props & InjectedFormProps>{
   public onHighlightBack = () =>  {
-    this.props.redirect('/');
+    this.props.redirect('/UsersManaging');
     this.props.highligthChosenElement();
   };
   public render(){
-    const { handleSubmit, pristine, submitting, updateUserInFirebase } = this.props
+    const { handleSubmit, submitting, updateUserInFirebase } = this.props;
     return(
       <div>
       <p className="h4 text-center py-4">Zmień dane użytkownika</p>
@@ -33,9 +34,12 @@ class EditUser extends React.Component<Props & InjectedFormProps>{
         <div>
           <Field name="uploadFile" component={UploadFile} />
         </div>
+        <div>
+          <Field name="fileName" component="input" type="text" hidden={true}  />
+        </div>
         <div className="mt-3">
           <MDBBtn color="dark" size="sm" type="submit" onClick={this.onHighlightBack}>Powrót</MDBBtn>
-          <MDBBtn color="success" size="sm" type="submit" disabled={pristine || submitting}>Zapisz</MDBBtn>
+          <MDBBtn color="success" size="sm" type="submit" disabled={submitting}>Zapisz</MDBBtn>
         </div>
       </form>
     </div>

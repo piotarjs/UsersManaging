@@ -9,6 +9,7 @@ import { ExtraArgument, SortByColumn, SortColumn, SortingOrder, UserDetails, Use
 // ----- Definicja stałych -----
 
 const INITIAL_FILENAME = 'Wybierz plik';
+export const MAIN_URL = 'UsersManaging';
 
 // -----------------------------
 
@@ -32,7 +33,7 @@ export interface State {
   }
 };
 
-interface AddUserToFirebase { firstName: string, key: string, secondName: string, uploadFile: string[] };
+interface AddUserToFirebase { firstName: string, key: string, secondName: string, uploadFile?: FileList };
 
 type FirebaseReducer = State['firebase'];
 
@@ -64,7 +65,7 @@ const GET_FILE_NAME = 'GET_FILE_NAME';
 // --------------- Inicjalizacja stanu ---------------
 
 const baseInitialState = {
-  fileName: 'Wybierz plik',
+  fileName: INITIAL_FILENAME,
   isError: false,
   isLoading: false,
   isUploading: false,
@@ -90,16 +91,25 @@ const addUser = (
   if (key === undefined) {
     key = Date.now().toString();
   }
+  uploadFile
+  ?
   pictureRef.child(key).put(uploadFile[0]).then((snapshot) => {
     pictureRef.child(snapshot.metadata.name).getDownloadURL().then((url: string) => {
       usersRef.child(key).set({
+        fileName: uploadFile[0].name,
         firstName,
         key,
         secondName,
         url
       })
     })
-  });
+  })
+  :
+  usersRef.child(key).update({
+    firstName,
+    secondName,
+  })
+ 
 }
 
 // ------------------------------------------------------------------------------------
@@ -110,8 +120,7 @@ export const addPending = () => ({
   type: `${CREATE}_${PENDING}`
 });
 
-export const addSuccess = (users: FirebaseReducer['users'], fileName: string) => ({
-  fileName,
+export const addSuccess = (users: FirebaseReducer['users']) => ({
   type: `${CREATE}_${FULFILLED}`,
   users
 });
@@ -126,15 +135,15 @@ export const addUserToFirebase = (user: AddUserToFirebase): Thunk =>
     dispatch(addPending());
     const usersRef = base.ref('users');
     const pictureRef = storage.ref('personalPicture');
-    const fileName = INITIAL_FILENAME;
     try {
       await addUser(user, usersRef, pictureRef);
       usersRef.on('value', (data) => {
         if (data) {
-          dispatch(addSuccess(data.val(), fileName))
+          dispatch(addSuccess(data.val()))
         }
       });
       dispatch(reset('List'));
+      dispatch(redirect(`/${MAIN_URL}`));
     } catch (error) {
       dispatch(addError(error));
     };
@@ -159,7 +168,7 @@ export const deleteUserFromFirebase = (key: string): Thunk =>
     const usersRef = base.ref('users');
     const pictureRef = storage.ref('personalPicture');
     try {
-      dispatch(push('/'));
+      dispatch(redirect(`/${MAIN_URL}`));
       usersRef.child(`${key}`).remove().then(
         () => pictureRef.child(`${key}`).delete().then(
           () => usersRef.on('value', (data) => {
@@ -221,11 +230,16 @@ export const filterError = (error: Error) => ({
   type: `${FILTER}_${REJECTED}`,
 });
 
-export const filterUsersList = (usersSorted: FirebaseReducer['users'], phrase: string): Thunk => async (dispatch) => {
+export const filterUsersList = (
+usersSorted: FirebaseReducer['users'], 
+phrase: string): Thunk => 
+async (dispatch) => 
+{
   dispatch(filterPending());
   const lowerCasePhrase = phrase.toLowerCase();
   try {    
-    const filteredList = Object.values(usersSorted).filter(({firstName, secondName}) => firstName.toLowerCase().includes(lowerCasePhrase) || secondName.toLowerCase().includes(lowerCasePhrase));
+    const filteredList = Object.values(usersSorted).filter(({firstName, secondName}) => 
+    firstName.toLowerCase().includes(lowerCasePhrase) || secondName.toLowerCase().includes(lowerCasePhrase));
     const usersFiltered = {};
     filteredList.forEach(({ firstName, key, secondName, url }) => usersFiltered[key] = { firstName, key, secondName, url });
     const sortColumn: SortColumn = {
@@ -246,7 +260,11 @@ export const sortPending = () => ({
   type: `${SORT}_${PENDING}`
 });
 
-export const sortSuccess = (usersSorted: FirebaseReducer['users'], sortingOrder: SortingOrder, sortColumn: SortColumn) =>  ({
+export const sortSuccess = (
+usersSorted: FirebaseReducer['users'], 
+sortingOrder: SortingOrder, 
+sortColumn: SortColumn) =>  
+({
   sortColumn,
   sortingOrder,
   type: `${SORT}_${FULFILLED}`,
@@ -258,7 +276,11 @@ export const sortError = (error: Error) => ({
   type: `${SORT}_${REJECTED}`,
 });
 
-const sortBy = (a: string, b: string, sortingOrder: SortingOrder) => 
+const sortBy = (
+a: string, 
+b: string, 
+sortingOrder: SortingOrder
+) => 
   sortingOrder === 'asc'
   ? 
     a > b
@@ -269,7 +291,11 @@ const sortBy = (a: string, b: string, sortingOrder: SortingOrder) =>
     ?
       -1 : 1
 
-export const sortUsersList = (usersFiltered: FirebaseReducer['users'], sortingOrder: SortingOrder, sortedByColumn: SortByColumn): Thunk => async (dispatch) => {
+export const sortUsersList = (
+usersFiltered: FirebaseReducer['users'], 
+sortingOrder: SortingOrder, 
+sortedByColumn: SortByColumn): Thunk => 
+async (dispatch) => {
   dispatch(sortPending());
   try {
     const usersSorted = {};
@@ -300,8 +326,9 @@ export const editError = (error: Error) => ({
 });
 export const editUser = ( userData: UserDetails['user']): Thunk => (dispatch) => {
   try {
-    const { firstName, key, secondName, url } = userData;
+    const { fileName, firstName, key, secondName, url } = userData;
     const user = {
+      fileName,
       firstName,
       key,
       secondName,
@@ -317,8 +344,7 @@ export const editUser = ( userData: UserDetails['user']): Thunk => (dispatch) =>
 
 // --------- Aktualizacja danych użytkownika ---------
 
-export const updateSuccess = (users: FirebaseReducer['users'], fileName: string) => ({
-  fileName,
+export const updateSuccess = (users: FirebaseReducer['users']) =>({
   listElementIsEdited: '',
   type: `${UPDATE}_${FULFILLED}`,
   users
@@ -333,16 +359,20 @@ export const updateUserInFirebase = (user: AddUserToFirebase): Thunk =>
   async (dispatch, getState, { base, storage }) => {
     const usersRef = base.ref('users');
     const pictureRef = storage.ref('personalPicture');
-    const fileName = INITIAL_FILENAME;
     try {
-      await pictureRef.child(user.key).delete().then(() => addUser(user, usersRef, pictureRef));
+      user.uploadFile
+      ?
+      await pictureRef.child(user.key).delete().then(() => addUser(user, usersRef, pictureRef))
+      :
+      await addUser(user, usersRef, pictureRef);
+      
       usersRef.on('value', (data) => {
         if (data) {
-          dispatch(updateSuccess(data.val(), fileName))
+          dispatch(updateSuccess(data.val()));
         }
       });
       dispatch(reset('List'));
-      dispatch(push('/'));
+      dispatch(redirect(`/${MAIN_URL}`));
     } catch (error) {
       dispatch(updateError(error));
     };
@@ -409,7 +439,11 @@ export const onDeleteHoverError = (error: Error) => ({
 
 export const onDeleteHoverHighlight = (type: string, key: string): Thunk => (dispatch) => {
   try {
-    type === 'mouseenter' ? dispatch(onDeleteHoverSuccess(key)) : dispatch(onDeleteHoverSuccess(""));
+    type === 'mouseenter' 
+    ? 
+    dispatch(onDeleteHoverSuccess(key)) 
+    : 
+    dispatch(onDeleteHoverSuccess(""));
   } catch (error) {
     dispatch(onDeleteHoverError(error))
   }
@@ -431,7 +465,11 @@ export const onEditHoverError = (error: Error) => ({
 
 export const onEditHoverHighlight = (type: string, key: string): Thunk => (dispatch) => {
   try {
-    type === 'mouseenter' ? dispatch(onEditHoverSuccess(key)) : dispatch(onEditHoverSuccess(""));
+    type === 'mouseenter' 
+    ? 
+    dispatch(onEditHoverSuccess(key)) 
+    : 
+    dispatch(onEditHoverSuccess(""));
   } catch (error) {
     dispatch(onDeleteHoverError(error))
   }
@@ -453,7 +491,11 @@ export const getFileNameError = (error: Error) => ({
 
 export const getFileName = ({target: {value}}: React.ChangeEvent<HTMLInputElement>): Thunk => (dispatch) => {
   try {
-    const fileName = (value.length > 0)? value.slice("C:/\fakepath\/".length) : INITIAL_FILENAME;
+    const fileName = (value.length > 0)
+    ? 
+    value.slice("C:/\fakepath\/".length) 
+    : 
+    INITIAL_FILENAME;
     dispatch(getFileNameSuccess(fileName));
   } catch (error) {
     dispatch(onDeleteHoverError(error))
@@ -464,9 +506,8 @@ export const getFileName = ({target: {value}}: React.ChangeEvent<HTMLInputElemen
 
 const firebaseReducer = typeToReducer({
   [CREATE]: {
-    FULFILLED: (state: FirebaseReducer, { fileName, users }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { users }: FirebaseReducer) => ({
       ...state,
-      fileName,
       isError: false,
       isUploading: false,
       users,
@@ -509,6 +550,7 @@ const firebaseReducer = typeToReducer({
   [EDIT]: {
     FULFILLED: (state: FirebaseReducer, { user }: FirebaseReducer) => ({
       ...state,
+      fileName: user.fileName,
       isError: false,
       user
     }),
@@ -533,9 +575,8 @@ const firebaseReducer = typeToReducer({
     }),
   },
   [UPDATE]: {
-    FULFILLED: (state: FirebaseReducer, { fileName, listElementIsEdited, users }: FirebaseReducer) => ({
+    FULFILLED: (state: FirebaseReducer, { listElementIsEdited, users }: FirebaseReducer) => ({
       ...state,
-      fileName,
       isError: false,
       isUploading: false,
       listElementIsEdited,

@@ -30,12 +30,12 @@ class ShowUsersList extends React.Component<Props> {
   public onEdit = (key: string) => (e: Event) => {
     e.stopPropagation();
     this.props.highligthChosenElement(key);
-    this.props.redirect(`/${key}/edit`);
+    this.props.redirect(`/UsersManaging/${key}/edit`);
   }
 
   public onDetails = (key: string) => () => {
     this.props.highligthChosenElement(key);
-    this.props.redirect(`/${key}`);
+    this.props.redirect(`/UsersManaging/${key}`);
   }
 
   public highlightElementToDelete = (key: string) => ({ type }: Event) => {

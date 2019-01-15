@@ -11,7 +11,7 @@ import { applyMiddleware, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { base, storage } from './database';
 import './index.css';
-import createRootReducer from './module';
+import createRootReducer, { MAIN_URL } from './module';
 import AddUserToFirebase from "./routes/AddUserToFirebase";
 
 
@@ -35,7 +35,7 @@ const List = () => (
     <ConnectedRouter history={history}>
       <div>
         <Switch>
-          <Route path={`/:key?/:action?`} component={AddUserToFirebase} />
+          <Route path={`/${MAIN_URL}/:key?/:action?`} component={AddUserToFirebase} />
         </Switch>
       </div>
     </ConnectedRouter>
