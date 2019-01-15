@@ -1,5 +1,5 @@
 import { MDBBtn } from "mdbreact";
-import { Container, Row } from 'mdbreact';
+import { Col, Container, Row } from 'mdbreact';
 import * as React from 'react';
 import { Action, ActionCreator } from 'redux';
 import { UserDetails } from '../../../../interfaces';
@@ -29,12 +29,16 @@ class About extends React.Component<Props>{
         </Row>
         {(firstName && secondName && url) &&
           <Row className="py-4 justify-content-center">
-            <img
-              src={url}
-              alt="Zdjęcie profilowe"
-              className="rounded-circle w-75 h-75"
-            />
-            <h4 className="font-weight-bold mb-3">{firstName} {secondName}</h4>
+            <Col xs="6" sm="4" md="6">
+              <img
+                src={url}
+                alt="Zdjęcie profilowe"
+                className="rounded-circle img-fluid"
+              />
+            </Col>
+            <Col xs="12">
+              <h4 className="font-weight-bold my-3 text-center">{firstName} {secondName}</h4>
+            </Col>
           </Row>}
       </Container>
     );
